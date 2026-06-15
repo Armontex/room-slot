@@ -6,7 +6,16 @@ authors = [
     { name = "Armontex", email = "windle1337@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "alembic>=1.18.4",
+    "asyncmy>=0.2.11",
+    "attrs>=26.1.0,<27.0.0",
+    "fastapi>=0.137.1,<1.0.0",
+    "pydantic>=2.13.4,<3.0.0",
+    "pydantic-settings>=2.14.1,<3.0.0",
+    "sqlalchemy>=2.0.51,<3.0.0",
+    "uvicorn[standard]>=0.49.0,<1.0.0",
+]
 
 [project.scripts]
 roomslot = "roomslot:main"
@@ -16,14 +25,69 @@ requires = ["uv_build>=0.10.7,<0.11.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = [
-    "pre-commit>=4.6.0",
-]
 lint = [
-    "bandit>=1.9.4",
-    "pyright>=1.1.410",
-    "ruff>=0.15.17",
+    "bandit>=1.9.4,<2.0.0",
+    "pyright>=1.1.410,<2.0.0",
+    "ruff>=0.15.17,<1.0.0",
+    "pre-commit>=4.6.0,<5.0.0",
 ]
 test = [
-    "pytest>=9.1.0",
+    "pytest>=9.1.0,<10.0.0",
+    "pytest-asyncio>=1.4.0,<2.0.0",
+    "pytest-cov>=7.1.0,<8.0.0",
+]
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+include = ["src"]
+exclude = [
+    "**/__pycache__",
+    ".venv",
+    "build",
+    "dist",
+    "node_modules",
+    "**/.*"
+]
+venvPath = "."
+venv = ".venv"
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+src = ["src", "tests"]
+exclude = [".venv", "build", "dist", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF003"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.ruff.lint.isort]
+known-first-party = ["roomslot"]
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests"]
+skips = []
+
+[tool.pytest.ini_options]
+addopts = [
+    "-ra",
+    "--import-mode=importlib",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src/roomslot",
+    "--cov-report=term-missing",
+    "--cov-report=xml:coverage.xml",
+]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "slow: slow tests",
+    "integration: integration tests",
 ]
