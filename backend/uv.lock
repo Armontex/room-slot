@@ -72,6 +72,14 @@ wheels = [
 ]
 
 [[package]]
+name = "attrs-validation"
+version = "0.1.0"
+source = { git = "https://github.com/Armontex/attrs-validation?rev=v0.1.0#c0f853eaee572719dac3507e2a1936c73f01f9e5" }
+dependencies = [
+    { name = "attrs" },
+]
+
+[[package]]
 name = "bandit"
 version = "1.9.4"
 source = { registry = "https://pypi.org/simple" }
@@ -696,6 +704,7 @@ dependencies = [
     { name = "alembic" },
     { name = "asyncmy" },
     { name = "attrs" },
+    { name = "attrs-validation" },
     { name = "fastapi" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -721,6 +730,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.18.4" },
     { name = "asyncmy", specifier = ">=0.2.11,<1.0.0" },
     { name = "attrs", specifier = ">=26.1.0,<27.0.0" },
+    { name = "attrs-validation", git = "https://github.com/Armontex/attrs-validation?rev=v0.1.0" },
     { name = "fastapi", specifier = ">=0.137.1,<1.0.0" },
     { name = "pydantic", specifier = ">=2.13.4,<3.0.0" },
     { name = "pydantic-settings", specifier = ">=2.14.1,<3.0.0" },
