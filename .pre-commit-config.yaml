@@ -1,0 +1,89 @@
+minimum_pre_commit_version: "3.2.0"
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
+
+exclude: |
+  (?x)(^|/)(
+    \.venv|
+    venv|
+    build|
+    dist|
+    migrations/versions|
+    alembic/versions|
+    node_modules|
+    __pycache__
+  )/
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: check-json
+      - id: debug-statements
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.12
+    hooks:
+      - id: ruff
+        name: Backend ruff
+        args: [--fix, --config, backend/pyproject.toml]
+        types_or: [python, pyi]
+        files: ^backend/
+
+      - id: ruff-format
+        name: Backend ruff format
+        args: [--config, backend/pyproject.toml]
+        types_or: [python, pyi]
+        files: ^backend/
+
+  - repo: local
+    hooks:
+      - id: conventional-commit-message
+        name: conventional commit message
+        entry: .githooks/commit-msg
+        language: system
+        stages: [commit-msg]
+        pass_filenames: true
+
+      - id: backend-pyright
+        name: pyright
+        entry: bash -c 'cd backend && uv run pyright --warnings'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      - id: backend-pytest
+        name: pytest
+        entry: bash -c 'cd backend && uv run pytest -q'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      - id: backend-bandit
+        name: bandit
+        entry: bash -c 'cd backend && uv run bandit -r src -ll -ii'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      - id: backend-uv-lock
+        name: uv lock check
+        entry: bash -c 'cd backend && uv lock --check'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

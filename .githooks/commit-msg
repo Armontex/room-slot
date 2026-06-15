@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+commit_msg_file="$1"
+commit_msg="$(sed -n '1p' "$commit_msg_file")"
+
+# Allow Git-generated messages.
+case "$commit_msg" in
+""|Merge\ *|Revert\ *|fixup!\ *|squash!\ *)
+    exit 0
+    ;;
+esac
+
+commit_regex='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9._-]+\))?!?: .+'
+
+if [[ ! "$commit_msg" =~ $commit_regex ]]; then
+    echo "ERROR: Invalid commit message."
+    echo
+    echo "Got:"
+    echo "  $commit_msg"
+    echo
+    echo "Expected Conventional Commit format:"
+    echo "  type(scope): description"
+    echo "  type: description"
+    echo
+    echo "Examples:"
+    echo "  feat(backend): add room booking"
+    echo "  fix(api): prevent double booking"
+    echo "  docs: update project idea"
+    echo
+    echo "Allowed types:"
+    echo "  build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test"
+    exit 1
+fi
