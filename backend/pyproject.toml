@@ -1,0 +1,16 @@
+[project]
+name = "roomslot"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Armontex", email = "windle1337@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+roomslot = "roomslot:main"
+
+[build-system]
+requires = ["uv_build>=0.10.7,<0.11.0"]
+build-backend = "uv_build"
