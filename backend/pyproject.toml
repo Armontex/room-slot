@@ -54,7 +54,7 @@ venvPath = "."
 venv = ".venv"
 
 [tool.ruff]
-line-length = 88
+line-length = 100
 target-version = "py313"
 src = ["src", "tests"]
 exclude = [".venv", "build", "dist", "__pycache__"]
