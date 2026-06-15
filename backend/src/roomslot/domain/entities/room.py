@@ -20,7 +20,7 @@ from roomslot.domain.utils.converters import optional_strip_str
 from roomslot.domain.utils.validators import int_validator
 
 
-@define(frozen=True, slots=True)
+@define(frozen=True, slots=True, kw_only=True)
 class Room:
     id: UUID = field(validator=v.instance_of(UUID))
     name: str = field(
@@ -48,9 +48,7 @@ class Room:
 
     def __attrs_post_init__(self) -> None:
         if self.updated_at < self.created_at:
-            raise DomainError(
-                "Room updated_at must be greater than or equal created_at"
-            )
+            raise DomainError("Room updated_at must be greater than or equal created_at")
 
     @classmethod
     def create(
