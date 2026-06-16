@@ -8,7 +8,8 @@ from roomslot.config.database import DatabaseSettings
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_prefix="BACKEND",
+        env_file=(".env", "../.env"),
+        env_prefix="BACKEND__",
         env_nested_delimiter="__",
         extra="ignore",
     )
