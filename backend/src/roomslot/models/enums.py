@@ -10,7 +10,7 @@ def _enum_values(enum_cls: type[enum.Enum]) -> list[str]:
     return [str(member.value) for member in enum_cls]
 
 
-class _SqlEnum(Enum):
+class SqlEnum(Enum):
     def __init__(self, *enums: str | type[enum.Enum], **kw: Any) -> None:
         kw.setdefault("native_enum", False)
         kw.setdefault("validate_strings", True)
@@ -18,6 +18,6 @@ class _SqlEnum(Enum):
         super().__init__(*enums, **kw)  # pyright: ignore[reportArgumentType, reportCallIssue]
 
 
-UserRoleEnum = _SqlEnum(UserRole)
-BuildingEnum = _SqlEnum(Building)
-BookingStatusEnum = _SqlEnum(BookingStatus)
+UserRoleEnum = SqlEnum(UserRole)
+BuildingEnum = SqlEnum(Building)
+BookingStatusEnum = SqlEnum(BookingStatus)
