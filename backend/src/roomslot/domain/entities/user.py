@@ -8,6 +8,7 @@ from attrs_validation import validators as v
 
 from roomslot.core.exceptions import DomainError
 from roomslot.domain.const import USER_HASHED_PASSWORD_MAX_VALUE, USER_HASHED_PASSWORD_MIN_VALUE
+from roomslot.domain.enums import UserRole
 from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.domain.value_objects.email import Email
 
@@ -16,6 +17,7 @@ from roomslot.domain.value_objects.email import Email
 class User:
     id: UUID = field(validator=v.instance_of(UUID))
     email: Email = field(validator=v.instance_of(Email))
+    role: UserRole = field(validator=v.instance_of(UserRole))
     hashed_password: str = field(
         converter=str.strip,
         validator=[
@@ -36,6 +38,7 @@ class User:
         cls,
         email: Email,
         hashed_password: str,
+        role: UserRole = UserRole.USER,
         *,
         clock: Clock,
         uuid_generator: UuidGenerator,
@@ -47,4 +50,5 @@ class User:
             hashed_password=hashed_password,
             created_at=now,
             updated_at=now,
+            role=role,
         )

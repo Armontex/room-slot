@@ -9,3 +9,8 @@ class Building(StrEnum):
 class BookingStatus(StrEnum):
     ACTIVE = "active"
     CANCELLED = "cancelled"
+
+
+class UserRole(StrEnum):
+    USER = "user"
+    ADMIN = "admin"
