@@ -16,7 +16,7 @@ from roomslot.models.types import ID, CreatedAt, UpdatedAt
 from roomslot.providers import SystemClock
 
 
-class RoomModel(Base):
+class RoomModel(Base):  # TODO: Добавить индексы
     __tablename__ = "rooms"
 
     id: Mapped[ID] = mapped_column()

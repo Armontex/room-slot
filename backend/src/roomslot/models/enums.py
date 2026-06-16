@@ -3,7 +3,7 @@ from typing import Any
 
 from sqlalchemy import Enum
 
-from roomslot.domain.enums import Building, UserRole
+from roomslot.domain.enums import BookingStatus, Building, UserRole
 
 
 def _enum_values(enum_cls: type[enum.Enum]) -> list[str]:
@@ -20,3 +20,4 @@ class _SqlEnum(Enum):
 
 UserRoleEnum = _SqlEnum(UserRole)
 BuildingEnum = _SqlEnum(Building)
+BookingStatusEnum = _SqlEnum(BookingStatus)
