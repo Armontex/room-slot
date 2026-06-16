@@ -1,4 +1,5 @@
 from attrs import define, field
+from attrs_validation import validators as v
 from email_validator import EmailNotValidError, validate_email
 
 from roomslot.core.exceptions import DomainError
@@ -6,7 +7,10 @@ from roomslot.core.exceptions import DomainError
 
 @define(frozen=True, slots=True)
 class Email:
-    value: str = field(converter=str.strip)
+    value: str = field(
+        converter=str.strip,
+        validator=v.instance_of(str),
+    )
 
     def __attrs_post_init__(self) -> None:
         try:
