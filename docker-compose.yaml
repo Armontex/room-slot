@@ -1,0 +1,26 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: roomslot-mysql
+    env_file:
+      - ./.env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?required}
+      MYSQL_USER: ${MYSQL_USER:?required}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?required}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?required}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+        test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
+        interval: 5s
+        timeout: 3s
+        retries: 20
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+
+volumes:
+  mysql_data:
