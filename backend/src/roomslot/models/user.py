@@ -1,5 +1,5 @@
 from sqlalchemy import CheckConstraint, String, func, text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from roomslot.domain.const import USER_HASHED_PASSWORD_MAX_LEN, USER_HASHED_PASSWORD_MIN_LEN
 from roomslot.domain.enums import UserRole
@@ -47,3 +47,11 @@ class UserModel(Base):  # TODO: Добавить индексы
             name="updated_at_ge_than_created_at",
         ),
     )
+
+    @validates("email", "hashed_password")
+    def _strip_strings(self, key: str, value: str) -> str:
+        return value.strip()
+
+    @validates("email")
+    def _normalize_email(self, key: str, value: str) -> str:
+        return value.lower()
