@@ -49,9 +49,9 @@ class UserModel(Base):  # TODO: Добавить индексы
     )
 
     @validates("email", "hashed_password")
-    def _strip_strings(self, key: str, value: str) -> str:
+    def _strip_strings(self, _: str, value: str) -> str:
         return value.strip()
 
     @validates("email")
-    def _normalize_email(self, key: str, value: str) -> str:
+    def _normalize_email(self, _: str, value: str) -> str:
         return value.lower()
