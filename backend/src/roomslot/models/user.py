@@ -54,4 +54,4 @@ class UserModel(Base):  # TODO: Добавить индексы
 
     @validates("hashed_password")
     def _normalize_hashed_password(self, _: str, value: str) -> str:
-        return value.lower()
+        return value.strip()
