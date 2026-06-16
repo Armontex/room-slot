@@ -3,10 +3,10 @@ from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from roomslot.domain.const import USER_HASHED_PASSWORD_MAX_LEN, USER_HASHED_PASSWORD_MIN_LEN
 from roomslot.domain.enums import UserRole
+from roomslot.infra.providers import SystemClock
 from roomslot.models.base import Base
 from roomslot.models.enums import UserRoleEnum
 from roomslot.models.types import ID, CreatedAt, UpdatedAt
-from roomslot.providers import SystemClock
 
 
 class UserModel(Base):  # TODO: Добавить индексы

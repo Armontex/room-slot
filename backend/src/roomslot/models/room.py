@@ -10,10 +10,10 @@ from roomslot.domain.const import (
     ROOM_NAME_MIN_LEN,
 )
 from roomslot.domain.enums import Building
+from roomslot.infra.providers import SystemClock
 from roomslot.models.base import Base
 from roomslot.models.enums import BuildingEnum
 from roomslot.models.types import ID, CreatedAt, UpdatedAt
-from roomslot.providers import SystemClock
 
 
 class RoomModel(Base):  # TODO: Добавить индексы

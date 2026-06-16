@@ -18,10 +18,10 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from roomslot.domain.enums import BookingStatus
+from roomslot.infra.providers import SystemClock
 from roomslot.models.base import Base
 from roomslot.models.enums import BookingStatusEnum
 from roomslot.models.types import ID, CreatedAt, UpdatedAt
-from roomslot.providers import SystemClock
 
 
 class BookingModel(Base):
