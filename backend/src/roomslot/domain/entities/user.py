@@ -7,7 +7,7 @@ from attrs import define, field
 from attrs_validation import validators as v
 
 from roomslot.core.exceptions import DomainError
-from roomslot.domain.const import USER_HASHED_PASSWORD_MAX_VALUE, USER_HASHED_PASSWORD_MIN_VALUE
+from roomslot.domain.const import USER_HASHED_PASSWORD_MAX_LEN, USER_HASHED_PASSWORD_MIN_LEN
 from roomslot.domain.enums import UserRole
 from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.domain.value_objects.email import Email
@@ -22,8 +22,8 @@ class User:
         converter=str.strip,
         validator=[
             v.instance_of(str),
-            v.min_len(USER_HASHED_PASSWORD_MIN_VALUE),
-            v.max_len(USER_HASHED_PASSWORD_MAX_VALUE),
+            v.min_len(USER_HASHED_PASSWORD_MIN_LEN),
+            v.max_len(USER_HASHED_PASSWORD_MAX_LEN),
         ],
     )
     created_at: datetime = field(validator=v.instance_of(datetime))
