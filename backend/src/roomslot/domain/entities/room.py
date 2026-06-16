@@ -17,7 +17,7 @@ from roomslot.domain.const import (
 from roomslot.domain.enums import Building
 from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.domain.utils.converters import optional_strip_str
-from roomslot.domain.utils.validators import int_validator
+from roomslot.domain.utils.validators import is_int
 
 
 @define(frozen=True, slots=True, kw_only=True)
@@ -32,8 +32,8 @@ class Room:
         ],
     )
     building: Building = field(validator=v.instance_of(Building))
-    floor: int = field(validator=[int_validator, v.ge(1)])
-    capacity: int = field(validator=[int_validator, v.ge(1)])
+    floor: int = field(validator=[is_int, v.ge(1)])
+    capacity: int = field(validator=[is_int, v.ge(1)])
     description: str | None = field(
         converter=optional_strip_str,
         validator=[
