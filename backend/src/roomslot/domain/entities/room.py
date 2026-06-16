@@ -9,8 +9,10 @@ from attrs_validation import validators as v
 
 from roomslot.core.exceptions import DomainError
 from roomslot.domain.const import (
+    ROOM_CAPACITY_MIN_VALUE,
     ROOM_DESCRIPTION_MAX_LEN,
     ROOM_DESCRIPTION_MIN_LEN,
+    ROOM_FLOOR_MIN_VALUE,
     ROOM_NAME_MAX_LEN,
     ROOM_NAME_MIN_LEN,
 )
@@ -32,8 +34,8 @@ class Room:
         ],
     )
     building: Building = field(validator=v.instance_of(Building))
-    floor: int = field(validator=[is_int, v.ge(1)])
-    capacity: int = field(validator=[is_int, v.ge(1)])
+    floor: int = field(validator=[is_int, v.ge(ROOM_FLOOR_MIN_VALUE)])
+    capacity: int = field(validator=[is_int, v.ge(ROOM_CAPACITY_MIN_VALUE)])
     description: str | None = field(
         converter=optional_strip_str,
         validator=[
