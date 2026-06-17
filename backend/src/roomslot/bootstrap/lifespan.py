@@ -4,9 +4,9 @@ from contextlib import asynccontextmanager
 import structlog
 from fastapi import FastAPI
 
+from roomslot.bootstrap.engine import create_db_engine
+from roomslot.bootstrap.session import create_session_factory
 from roomslot.config.settings import Settings
-from roomslot.db.engine import create_db_engine
-from roomslot.db.session import create_session_factory
 
 logger = structlog.get_logger(__name__)
 
