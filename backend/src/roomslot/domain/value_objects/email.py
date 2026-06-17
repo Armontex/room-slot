@@ -2,7 +2,7 @@ from attrs import define, field
 from attrs_validation import validators as v
 from email_validator import EmailNotValidError, validate_email
 
-from roomslot.core.exceptions import DomainError
+from roomslot.common.exceptions import DomainError
 
 
 @define(frozen=True, slots=True)

@@ -1,6 +1,10 @@
 from sqlalchemy import Boolean, CheckConstraint, Integer, String, UniqueConstraint, func, true
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
+from roomslot.common.providers import SystemClock
+from roomslot.db.models.base import Base
+from roomslot.db.models.enums import BuildingEnum
+from roomslot.db.models.types import ID, CreatedAt, UpdatedAt
 from roomslot.domain.const import (
     ROOM_CAPACITY_MIN_VALUE,
     ROOM_DESCRIPTION_MAX_LEN,
@@ -10,10 +14,6 @@ from roomslot.domain.const import (
     ROOM_NAME_MIN_LEN,
 )
 from roomslot.domain.enums import Building
-from roomslot.infra.providers import SystemClock
-from roomslot.models.base import Base
-from roomslot.models.enums import BuildingEnum
-from roomslot.models.types import ID, CreatedAt, UpdatedAt
 
 
 class RoomModel(Base):  # TODO: Добавить индексы

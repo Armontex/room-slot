@@ -1,6 +1,6 @@
+from roomslot.common.health import HealthCheck
 from roomslot.containers.container import Container
-from roomslot.core.health import HealthCheck
-from roomslot.infra.db.checks import check_db_connection, check_db_migrations
+from roomslot.db.checks import check_db_connection, check_db_migrations
 
 
 def build_health_checks(container: Container) -> tuple[HealthCheck, ...]:

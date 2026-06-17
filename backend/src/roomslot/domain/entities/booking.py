@@ -6,7 +6,7 @@ from uuid import UUID
 from attrs import define, evolve, field
 from attrs_validation import validators as v
 
-from roomslot.core.exceptions import DomainError
+from roomslot.common.exceptions import DomainError
 from roomslot.domain.enums import BookingStatus
 from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.domain.value_objects.slot import Slot

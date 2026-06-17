@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from roomslot.api.schemas.base import BaseResponse
-from roomslot.core.health import HealthStatus
+from roomslot.common.health import HealthStatus
 
 
 class HealthCheckResultResponse(BaseModel):

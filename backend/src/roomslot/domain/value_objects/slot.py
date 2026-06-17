@@ -7,8 +7,8 @@ from datetime import datetime, time
 from attrs import Attribute, define, field
 from attrs_validation import validators as v
 
-from roomslot.core.const import LOCAL_TZ
-from roomslot.core.exceptions import DomainError
+from roomslot.common.const import LOCAL_TZ
+from roomslot.common.exceptions import DomainError
 from roomslot.domain.const import SLOT_MAX_TIME, SLOT_MIN_TIME, SLOT_TIME_DIFFERENCE
 
 

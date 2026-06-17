@@ -3,9 +3,9 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-import roomslot.models  # pyright: ignore[reportUnusedImport]  # noqa: F401
+import roomslot.db.models  # pyright: ignore[reportUnusedImport]  # noqa: F401
 from roomslot.config.settings import get_settings
-from roomslot.models.base import Base
+from roomslot.db.models.base import Base
 
 settings = get_settings()
 

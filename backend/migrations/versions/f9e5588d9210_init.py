@@ -11,7 +11,7 @@ from collections.abc import Sequence
 import sqlalchemy as sa
 from alembic import op
 
-import roomslot.models.enums
+import roomslot.db.models.enums
 
 # revision identifiers, used by Alembic.
 revision: str = "f9e5588d9210"
@@ -29,7 +29,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column(
             "building",
-            roomslot.models.enums.SqlEnum("ГУК", "ИРИТ-РТФ", name="building", native_enum=False),
+            roomslot.db.models.enums.SqlEnum("ГУК", "ИРИТ-РТФ", name="building", native_enum=False),
             nullable=False,
         ),
         sa.Column("floor", sa.Integer(), nullable=False),
@@ -68,7 +68,7 @@ def upgrade() -> None:
         sa.Column("hashed_password", sa.String(length=255), nullable=False),
         sa.Column(
             "role",
-            roomslot.models.enums.SqlEnum("user", "admin", name="userrole", native_enum=False),
+            roomslot.db.models.enums.SqlEnum("user", "admin", name="userrole", native_enum=False),
             server_default=sa.text("'user'"),
             nullable=False,
         ),
@@ -103,7 +103,7 @@ def upgrade() -> None:
         sa.Column("slot_start", sa.Time(), nullable=False),
         sa.Column(
             "status",
-            roomslot.models.enums.SqlEnum(
+            roomslot.db.models.enums.SqlEnum(
                 "active", "cancelled", name="bookingstatus", native_enum=False
             ),
             server_default=sa.text("'active'"),

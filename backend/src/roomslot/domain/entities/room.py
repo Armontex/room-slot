@@ -7,7 +7,7 @@ import attrs.validators as av
 from attrs import define, field
 from attrs_validation import validators as v
 
-from roomslot.core.exceptions import DomainError
+from roomslot.common.exceptions import DomainError
 from roomslot.domain.const import (
     ROOM_CAPACITY_MIN_VALUE,
     ROOM_DESCRIPTION_MAX_LEN,

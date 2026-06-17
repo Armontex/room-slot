@@ -9,8 +9,8 @@ from roomslot.api.schemas.health import (
     LiveResponse,
 )
 from roomslot.bootstrap.health import build_health_checks
+from roomslot.common.health import run_health_checks
 from roomslot.containers.container import Container
-from roomslot.core.health import run_health_checks
 
 router = APIRouter(prefix="/health", tags=["Health"])
 
