@@ -5,6 +5,7 @@ from roomslot.config.settings import get_settings
 from roomslot.containers.container import Container
 from roomslot.middlewares.request_logging import RequestLoggingMiddleware
 from roomslot.observation.logs.setup import setup_logging
+from roomslot.routers import api_router
 
 
 def create_app() -> FastAPI:
@@ -22,6 +23,8 @@ def create_app() -> FastAPI:
     )
 
     app.state.container = container
+
+    app.include_router(api_router)
 
     app.add_middleware(
         RequestLoggingMiddleware,

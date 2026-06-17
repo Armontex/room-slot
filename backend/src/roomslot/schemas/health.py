@@ -1,6 +1,9 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict
 
 from roomslot.core.health import HealthStatus
+from roomslot.schemas.base import BaseResponse
 
 
 class HealthCheckResultResponse(BaseModel):
@@ -11,8 +14,12 @@ class HealthCheckResultResponse(BaseModel):
     error: str | None = None
 
 
-class HealthReportResponse(BaseModel):
+class HealthReportResponse(BaseResponse):
     model_config = ConfigDict(from_attributes=True)
 
     status: HealthStatus
     checks: tuple[HealthCheckResultResponse, ...]
+
+
+class LiveResponse(BaseResponse):
+    status: Literal["ok"] = "ok"
