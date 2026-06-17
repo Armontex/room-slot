@@ -4,7 +4,6 @@ from roomslot.api.middlewares.request_logging import RequestLoggingMiddleware
 from roomslot.api.routers import api_router
 from roomslot.bootstrap.lifespan import lifespan
 from roomslot.config.settings import get_settings
-from roomslot.containers.container import Container
 from roomslot.logging.setup import setup_logging
 
 
@@ -13,8 +12,6 @@ def create_app() -> FastAPI:
 
     setup_logging(settings.logging)
 
-    container = Container(settings=settings)
-
     app = FastAPI(
         title=settings.service.name,
         version=settings.service.version,
@@ -22,7 +19,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    app.state.container = container
+    app.state.settings = settings
 
     app.include_router(api_router)
 
