@@ -4,7 +4,7 @@ from sqlalchemy import inspect
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.sql import text
 
-from roomslot.errors import DatabaseMigrationError
+from roomslot.core.exceptions import DatabaseMigrationError
 
 ALEMBIC_INI = "alembic.ini"
 ALEMBIC_VERSION_TABLE = "alembic_version"

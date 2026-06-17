@@ -2,11 +2,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
 
+from roomslot.api.routers.dependencies import get_container
+from roomslot.api.schemas.health import (
+    HealthCheckResultResponse,
+    HealthReportResponse,
+    LiveResponse,
+)
 from roomslot.bootstrap.health import build_health_checks
 from roomslot.containers.container import Container
 from roomslot.core.health import run_health_checks
-from roomslot.routers.dependencies import get_container
-from roomslot.schemas.health import HealthCheckResultResponse, HealthReportResponse, LiveResponse
 
 router = APIRouter(prefix="/health", tags=["Health"])
 

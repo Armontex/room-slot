@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 
+from roomslot.api.routers import api_router
 from roomslot.bootstrap.lifespan import lifespan
 from roomslot.config.settings import get_settings
 from roomslot.containers.container import Container
 from roomslot.middlewares.request_logging import RequestLoggingMiddleware
 from roomslot.observation.logs.setup import setup_logging
-from roomslot.routers import api_router
 
 
 def create_app() -> FastAPI:
