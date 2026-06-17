@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from datetime import timedelta
+from uuid import UUID
 
 from structlog import get_logger
 
@@ -74,3 +75,22 @@ class AuthService:
         logger.info("auth.login_user.succeeded")
 
         return access_token
+
+    async def authenticate_user(self, token: str) -> User:
+        logger.debug("auth.authenticate_user.started")
+
+        claims = self._jwt.verify(token)
+        try:
+            user_id = UUID(claims.subject)
+        except ValueError as e:
+            logger.warning("auth.authenticate_user.invalid_token")
+            raise InvalidCredentials() from e
+
+        repo = self._repo_factory()
+        user = await repo.get_by_id(user_id)
+
+        if user is None:
+            logger.warning("auth.authenticate_user.not_found")
+            raise InvalidCredentials()
+
+        return user

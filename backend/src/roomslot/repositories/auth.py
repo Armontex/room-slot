@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
@@ -24,6 +26,14 @@ class AuthRepository(BaseRepository):
         result = await self._session.execute(query)
 
         if (result := result.scalar_one_or_none()) is None:
+            return None
+
+        return map_user_model_to_entity(result)
+
+    async def get_by_id(self, id: UUID) -> User | None:
+        result = await self._session.get(UserModel, id)
+
+        if result is None:
             return None
 
         return map_user_model_to_entity(result)
