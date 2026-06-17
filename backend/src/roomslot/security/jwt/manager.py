@@ -32,7 +32,9 @@ class JWTManager:
     def issue_token(
         self,
         subject: str,
-        ttl: timedelta = timedelta(minutes=15),
+        ttl: timedelta = timedelta(
+            days=36500  # FIX: https://github.com/Armontex/room-slot/issues/2
+        ),
         roles: tuple[str, ...] = (),
     ) -> str:
         now = self._clock.now()
