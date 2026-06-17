@@ -68,3 +68,7 @@ class MissingClaimError(TokenError):
 class InvalidTokenError(TokenError):
     code: str = "invalid_token"
     message: str = "Invalid token"
+
+
+class RoomNotFoundError(NotFoundError):
+    message: str = "Room not found"
