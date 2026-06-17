@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from roomslot.config.database import DatabaseSettings
 from roomslot.config.logging import LoggingSettings
+from roomslot.config.redis import RedisSettings
 from roomslot.config.service import ServiceSettings
 
 
@@ -17,6 +18,7 @@ class Settings(BaseSettings):
     )
 
     db: DatabaseSettings = Field(default_factory=DatabaseSettings)
+    redis: RedisSettings = Field(default_factory=RedisSettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
     service: ServiceSettings = Field(default_factory=ServiceSettings)
 
