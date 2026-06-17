@@ -1,5 +1,6 @@
 from collections.abc import Callable
 
+from roomslot.common.exceptions import InvalidCredentials
 from roomslot.common.providers import SystemClock, Uuid4Generator
 from roomslot.domain.entities.user import User
 from roomslot.domain.value_objects.email import Email
@@ -34,5 +35,17 @@ class AuthService:
 
         await repo.add(user)
         await session.commit()
+
+        return user
+
+    async def login_user(self, email: str, password: str) -> User:
+        repo = self._repo_factory()
+        user = await repo.get_by_email(Email(email))
+
+        if user is None:
+            raise InvalidCredentials()
+
+        if not await self._ph.verify(user.hashed_password, password):
+            raise InvalidCredentials()
 
         return user
