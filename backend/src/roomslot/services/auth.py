@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from datetime import timedelta
 
 from structlog import get_logger
 
@@ -21,11 +22,14 @@ class AuthService:
         clock: SystemClock,
         uuid_generator: Uuid4Generator,
         jwt_manager: JWTManager,
+        jwt_ttl_minutes: int,
     ) -> None:
         self._repo_factory = repo_factory
         self._ph = password_hasher
         self._clock = clock
         self._uuid_generator = uuid_generator
+        self._jwt = jwt_manager
+        self._jwt_ttl_minutes = jwt_ttl_minutes
 
     async def register_user(self, email: str, password: str) -> User:
         logger.debug("auth.register_user.started")
@@ -48,7 +52,7 @@ class AuthService:
 
         return user
 
-    async def login_user(self, email: str, password: str) -> User:
+    async def login_user(self, email: str, password: str) -> str:
         logger.debug("auth.login_user.started")
 
         repo = self._repo_factory()
@@ -62,4 +66,11 @@ class AuthService:
             logger.warning("auth.login_user.invalid_password")
             raise InvalidCredentials()
 
-        return user
+        access_token = self._jwt.issue_token(
+            subject=str(user.id),
+            ttl=timedelta(minutes=self._jwt_ttl_minutes),
+        )
+
+        logger.info("auth.login_user.succeeded")
+
+        return access_token
