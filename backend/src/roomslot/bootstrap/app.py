@@ -14,7 +14,9 @@ def create_app() -> FastAPI:
     container = Container(settings=settings)
 
     app = FastAPI(
-        debug=False,  # TODO: вынести в настройки
+        title=settings.service.name,
+        version=settings.service.version,
+        debug=False,
         lifespan=lifespan,
     )
 
