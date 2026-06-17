@@ -44,3 +44,27 @@ class InvalidCredentials(AppError):
     status_code: int = status.HTTP_401_UNAUTHORIZED
     code: str = "invalid_credentials"
     message: str = "Invalid credentials"
+
+
+class TokenError(AppError):
+    status_code: int = status.HTTP_401_UNAUTHORIZED
+    code: str = "invalid_token"
+    message: str = "Invalid token"
+
+
+class ExpiredTokenError(TokenError):
+    code: str = "expired_token"
+    message: str = "Token has expired"
+
+
+class MissingClaimError(TokenError):
+    code: str = "missing_token_claim"
+    message: str = "Missing required token claim"
+
+    def __init__(self, claim: str) -> None:
+        self.message = f"Missing required token claim: {claim}"
+
+
+class InvalidTokenError(TokenError):
+    code: str = "invalid_token"
+    message: str = "Invalid token"
