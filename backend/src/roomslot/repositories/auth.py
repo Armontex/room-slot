@@ -16,6 +16,7 @@ class AuthRepository(BaseRepository):
         try:
             await self._session.flush()
         except IntegrityError as e:
+            await self._session.rollback()
             raise EmailAlreadyExistsError() from e
 
     async def get_by_email(self, email: Email) -> User | None:
