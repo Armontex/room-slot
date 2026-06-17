@@ -1,8 +1,9 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
+from sqlalchemy.ext.asyncio import AsyncEngine
 
-from roomslot.api.routers.dependencies import get_container
+from roomslot.api.routers.dependencies import get_engine
 from roomslot.api.schemas.health import (
     HealthCheckResultResponse,
     HealthReportResponse,
@@ -10,7 +11,6 @@ from roomslot.api.schemas.health import (
 )
 from roomslot.bootstrap.health import build_health_checks
 from roomslot.common.health import run_health_checks
-from roomslot.containers.container import Container
 
 router = APIRouter(prefix="/health", tags=["Health"])
 
@@ -37,12 +37,12 @@ async def live() -> LiveResponse:
 )
 async def ready(
     response: Response,
-    container: Annotated[
-        Container,
-        Depends(get_container),
+    engine: Annotated[
+        AsyncEngine,
+        Depends(get_engine),
     ],
 ) -> HealthReportResponse:
-    checks = build_health_checks(container)
+    checks = build_health_checks(engine)
     result = await run_health_checks(checks)
 
     if not result.is_ok:

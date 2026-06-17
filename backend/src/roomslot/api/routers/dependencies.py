@@ -1,7 +1,6 @@
 from fastapi import Request
+from sqlalchemy.ext.asyncio import AsyncEngine
 
-from roomslot.containers.container import Container
 
-
-def get_container(request: Request) -> Container:
-    return request.app.state.container
+def get_engine(request: Request) -> AsyncEngine:
+    return request.app.state.engine
