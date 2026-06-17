@@ -1,11 +1,16 @@
 from collections.abc import Callable
 
+from structlog import get_logger
+
 from roomslot.common.exceptions import InvalidCredentials
 from roomslot.common.providers import SystemClock, Uuid4Generator
 from roomslot.domain.entities.user import User
 from roomslot.domain.value_objects.email import Email
 from roomslot.repositories.auth import AuthRepository
+from roomslot.security.jwt.manager import JWTManager
 from roomslot.security.password_hasher import PasswordHasher
+
+logger = get_logger(__name__)
 
 
 class AuthService:
@@ -15,6 +20,7 @@ class AuthService:
         password_hasher: PasswordHasher,
         clock: SystemClock,
         uuid_generator: Uuid4Generator,
+        jwt_manager: JWTManager,
     ) -> None:
         self._repo_factory = repo_factory
         self._ph = password_hasher
@@ -22,6 +28,8 @@ class AuthService:
         self._uuid_generator = uuid_generator
 
     async def register_user(self, email: str, password: str) -> User:
+        logger.debug("auth.register_user.started")
+
         hashed_password = await self._ph.hash(password)
         user = User.create(
             email=Email(email),
@@ -36,16 +44,22 @@ class AuthService:
         await repo.add(user)
         await session.commit()
 
+        logger.info("auth.register_user.succeeded")
+
         return user
 
     async def login_user(self, email: str, password: str) -> User:
+        logger.debug("auth.login_user.started")
+
         repo = self._repo_factory()
         user = await repo.get_by_email(Email(email))
 
         if user is None:
+            logger.warning("auth.login_user.not_found")
             raise InvalidCredentials()
 
         if not await self._ph.verify(user.hashed_password, password):
+            logger.warning("auth.login_user.invalid_password")
             raise InvalidCredentials()
 
         return user
