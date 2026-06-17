@@ -1,8 +1,11 @@
+from roomslot.db.models.booking import BookingModel
 from roomslot.db.models.room import RoomModel
 from roomslot.db.models.user import UserModel
+from roomslot.domain.entities.booking import Booking
 from roomslot.domain.entities.room import Room
 from roomslot.domain.entities.user import User
 from roomslot.domain.value_objects.email import Email
+from roomslot.domain.value_objects.slot import Slot
 
 
 def map_user_entity_to_model(entity: User) -> UserModel:
@@ -36,6 +39,22 @@ def map_room_model_to_entity(model: RoomModel) -> Room:
         capacity=model.capacity,
         description=model.description,
         is_active=model.is_active,
+        created_at=model.created_at,
+        updated_at=model.updated_at,
+    )
+
+
+def map_booking_model_to_entity(model: BookingModel) -> Booking:
+    return Booking(
+        id=model.id,
+        user_id=model.user_id,
+        room_id=model.room_id,
+        slot=Slot(
+            date=model.booking_date,
+            start=model.slot_start,
+        ),
+        status=model.status,
+        cancelled_at=model.cancelled_at,
         created_at=model.created_at,
         updated_at=model.updated_at,
     )
