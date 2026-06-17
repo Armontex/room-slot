@@ -72,3 +72,23 @@ class InvalidTokenError(TokenError):
 
 class RoomNotFoundError(NotFoundError):
     message: str = "Room not found"
+
+
+class BookingAlreadyExists(AlreadyExistsError):
+    message: str = "Booking already exists"
+
+
+class BookingNotFoundError(NotFoundError):
+    message: str = "Booking not found"
+
+
+class BookingAccessDeniedError(AppError):
+    status_code: int = status.HTTP_403_FORBIDDEN
+    code: str = "booking_access_denied"
+    message: str = "You are not allowed to manage this booking"
+
+
+class BookingAlreadyCancelled(AppError):
+    status_code: int = status.HTTP_409_CONFLICT
+    code: str = "already_cancelled"
+    message: str = "Booking already cancelled"

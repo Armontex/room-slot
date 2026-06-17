@@ -1,9 +1,11 @@
 from datetime import date
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, update
+from sqlalchemy.exc import IntegrityError
 
-from roomslot.common.mappers import map_booking_model_to_entity
+from roomslot.common.exceptions import BookingAlreadyExists
+from roomslot.common.mappers import map_booking_entity_to_model, map_booking_model_to_entity
 from roomslot.db.models.booking import BookingModel
 from roomslot.domain.entities.booking import Booking
 from roomslot.domain.enums import BookingStatus
@@ -11,6 +13,35 @@ from roomslot.repositories.base import BaseRepository
 
 
 class BookingRepository(BaseRepository):
+    async def add(self, booking: Booking) -> None:
+        model = map_booking_entity_to_model(booking)
+        self._session.add(model)
+        try:
+            await self._session.flush()
+        except IntegrityError as e:
+            await self._session.rollback()
+            raise BookingAlreadyExists() from e
+
+    async def get_by_id(self, booking_id: UUID) -> Booking | None:
+        result = await self._session.get(BookingModel, booking_id)
+
+        if result is None:
+            return None
+
+        return map_booking_model_to_entity(result)
+
+    async def update(self, booking: Booking) -> None:
+        stmt = (
+            update(BookingModel)
+            .filter_by(id=booking.id)
+            .values(
+                status=booking.status,
+                updated_at=booking.updated_at,
+                cancelled_at=booking.cancelled_at,
+            )
+        )
+        await self._session.execute(stmt)
+
     async def get_active_bookings_for_room_between_dates(
         self,
         room_id: UUID,
@@ -34,3 +65,21 @@ class BookingRepository(BaseRepository):
         result = await self._session.execute(query)
 
         return tuple(map_booking_model_to_entity(m) for m in result.scalars())
+
+    # async def get_active_booking_for_slot(
+    #     self,
+    #     room_id: UUID,
+    #     slot: Slot,
+    # ) -> Booking | None:
+    #     query = select(BookingModel).where(
+    #         BookingModel.room_id == room_id,
+    #         BookingModel.booking_date == slot.date,
+    #         BookingModel.slot_start == slot.start_at.time(),
+    #     )
+
+    #     result = await self._session.execute(query)
+
+    #     if (result := result.scalar_one_or_none()) is None:
+    #         return None
+
+    #     return map_booking_model_to_entity(result)

@@ -58,3 +58,17 @@ def map_booking_model_to_entity(model: BookingModel) -> Booking:
         created_at=model.created_at,
         updated_at=model.updated_at,
     )
+
+
+def map_booking_entity_to_model(entity: Booking) -> BookingModel:
+    return BookingModel(
+        id=entity.id,
+        user_id=entity.user_id,
+        room_id=entity.room_id,
+        booking_date=entity.slot.date,
+        slot_start=entity.slot.start_at.time(),
+        status=entity.status,
+        cancelled_at=entity.cancelled_at,
+        created_at=entity.created_at,
+        updated_at=entity.updated_at,
+    )
