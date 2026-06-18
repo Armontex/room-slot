@@ -32,7 +32,7 @@ class AuthService:
         self._jwt = jwt_manager
         self._jwt_ttl_minutes = jwt_ttl_minutes
 
-    async def register_user(self, email: str, password: str) -> User:
+    async def register_user(self, email: str, password: str) -> None:
         logger.debug("auth.register_user.started")
 
         hashed_password = await self._ph.hash(password)
@@ -50,8 +50,6 @@ class AuthService:
         await session.commit()
 
         logger.info("auth.register_user.succeeded")
-
-        return user
 
     async def login_user(self, email: str, password: str) -> str:
         logger.debug("auth.login_user.started")
