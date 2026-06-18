@@ -75,9 +75,9 @@ def map_booking_entity_to_model(entity: Booking) -> BookingModel:
     )
 
 
-def map_booking_to_payload(entity: Booking) -> dict[str, JsonValue]:
+def map_booking_to_payload(event_type: str, entity: Booking) -> dict[str, JsonValue]:
     return {
-        "type": "booking.created",
+        "type": event_type,
         "booking_id": str(entity.id),
         "room_id": str(entity.room_id),
         "user_id": str(entity.user_id),

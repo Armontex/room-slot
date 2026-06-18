@@ -15,7 +15,7 @@ class EventPublisher:
         self._publisher = publisher
 
     async def booking_created(self, booking: Booking) -> None:
-        payload = map_booking_to_payload(booking)
+        payload = map_booking_to_payload("booking.created", booking)
         await self._publisher.publish(payload)
         logger.info(
             "event_publisher.booking_created.published",
@@ -23,7 +23,7 @@ class EventPublisher:
         )
 
     async def booking_cancelled(self, booking: Booking) -> None:
-        payload = map_booking_to_payload(booking)
+        payload = map_booking_to_payload("booking.cancelled", booking)
         await self._publisher.publish(payload)
         logger.info(
             "event_publisher.booking_cancelled.published",
