@@ -45,8 +45,8 @@ class BookingModel(Base):
         server_default=text(f"'{BookingStatus.ACTIVE.value}'"),
         nullable=False,
     )
-    created_at: Mapped[CreatedAt] = mapped_column(default=SystemClock.now)
-    updated_at: Mapped[UpdatedAt] = mapped_column(default=SystemClock.now)
+    created_at: Mapped[CreatedAt] = mapped_column(default_factory=SystemClock.now)
+    updated_at: Mapped[UpdatedAt] = mapped_column(default_factory=SystemClock.now)
     cancelled_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,

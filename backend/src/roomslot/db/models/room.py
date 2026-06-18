@@ -40,8 +40,8 @@ class RoomModel(Base):
         server_default=true(),
         index=True,
     )
-    created_at: Mapped[CreatedAt] = mapped_column(default=SystemClock.now)
-    updated_at: Mapped[UpdatedAt] = mapped_column(default=SystemClock.now)
+    created_at: Mapped[CreatedAt] = mapped_column(default_factory=SystemClock.now)
+    updated_at: Mapped[UpdatedAt] = mapped_column(default_factory=SystemClock.now)
 
     __table_args__ = (
         UniqueConstraint(name, building, floor),
