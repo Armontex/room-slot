@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from roomslot.common.types import JsonValue
 from roomslot.db.models.booking import BookingModel
 from roomslot.db.models.room import RoomModel
@@ -7,6 +9,18 @@ from roomslot.domain.entities.room import Room
 from roomslot.domain.entities.user import User
 from roomslot.domain.value_objects.email import Email
 from roomslot.domain.value_objects.slot import Slot
+
+
+def _as_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
+
+
+def _optional_as_utc(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    return _as_utc(value)
 
 
 def map_user_entity_to_model(entity: User) -> UserModel:
@@ -26,8 +40,8 @@ def map_user_model_to_entity(model: UserModel) -> User:
         email=Email(model.email),
         role=model.role,
         hashed_password=model.hashed_password,
-        created_at=model.created_at,
-        updated_at=model.updated_at,
+        created_at=_as_utc(model.created_at),
+        updated_at=_as_utc(model.updated_at),
     )
 
 
@@ -40,8 +54,8 @@ def map_room_model_to_entity(model: RoomModel) -> Room:
         capacity=model.capacity,
         description=model.description,
         is_active=model.is_active,
-        created_at=model.created_at,
-        updated_at=model.updated_at,
+        created_at=_as_utc(model.created_at),
+        updated_at=_as_utc(model.updated_at),
     )
 
 
@@ -55,9 +69,9 @@ def map_booking_model_to_entity(model: BookingModel) -> Booking:
             start=model.slot_start,
         ),
         status=model.status,
-        cancelled_at=model.cancelled_at,
-        created_at=model.created_at,
-        updated_at=model.updated_at,
+        cancelled_at=_optional_as_utc(model.cancelled_at),
+        created_at=_as_utc(model.created_at),
+        updated_at=_as_utc(model.updated_at),
     )
 
 

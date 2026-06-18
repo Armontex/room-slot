@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from calendar import Day
+from datetime import UTC, datetime, time
 from datetime import date as date_
-from datetime import datetime, time
 
 from attrs import Attribute, define, field
 from attrs_validation import validators as v
 
-from roomslot.common.const import LOCAL_TZ
 from roomslot.common.exceptions import DomainError
 from roomslot.domain.const import SLOT_MAX_TIME, SLOT_MIN_TIME, SLOT_TIME_DIFFERENCE
 
@@ -34,7 +33,7 @@ class Slot:
 
     @property
     def start_at(self) -> datetime:
-        return datetime.combine(date=self.date, time=self._start, tzinfo=LOCAL_TZ)
+        return datetime.combine(date=self.date, time=self._start, tzinfo=UTC)
 
     @property
     def end_at(self) -> datetime:

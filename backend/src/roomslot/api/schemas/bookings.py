@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import field_validator
 
 from roomslot.api.schemas.base import BaseResponse, BaseSchema, PaginatedResponse
+from roomslot.domain.const import SLOT_MAX_TIME, SLOT_MIN_TIME
 from roomslot.domain.enums import BookingStatus
 
 
@@ -27,8 +28,10 @@ class CreateBookingRequest(BaseSchema):
         if value.minute != 0 or value.second != 0 or value.microsecond != 0:
             raise ValueError("Slot start time must be a full hour")
 
-        if value.hour not in range(10, 19):
-            raise ValueError("Slot start time must be between 10:00 and 18:00")
+        if value.hour not in range(SLOT_MIN_TIME, SLOT_MAX_TIME):
+            raise ValueError(
+                f"Slot start time must be between {SLOT_MIN_TIME}:00 and {SLOT_MAX_TIME - 1}:00 UTC"
+            )
 
         return value
 
