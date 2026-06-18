@@ -24,6 +24,7 @@ from roomslot.services.booking import BookingService
 from roomslot.services.event_publisher import EventPublisher
 from roomslot.services.room import RoomService
 from roomslot.services.slot import SlotService
+from roomslot.ws.room_connection_manager import RoomConnectionManager
 
 HTTP_BEARER = HTTPBearer(auto_error=False)
 
@@ -34,6 +35,10 @@ def get_engine(request: Request) -> AsyncEngine:
 
 def get_redis(request: Request) -> Redis:
     return request.app.state.redis
+
+
+def get_room_connection_manager(request: Request) -> RoomConnectionManager:
+    return request.app.state.room_connection_manager
 
 
 async def get_session(request: Request) -> AsyncGenerator[AsyncSession]:
@@ -66,6 +71,7 @@ UuidGenDepend = Annotated[UuidGenerator, Depends(get_uuid_generator)]
 SessionDepend = Annotated[AsyncSession, Depends(get_session)]
 SettingsDepend = Annotated[Settings, Depends(get_settings)]
 RedisDepend = Annotated[Redis, Depends(get_redis)]
+RoomConnectionManagerDepend = Annotated[RoomConnectionManager, Depends(get_room_connection_manager)]
 
 
 def get_jwt_manager(
