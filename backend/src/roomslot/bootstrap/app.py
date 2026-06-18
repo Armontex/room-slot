@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
-from roomslot.api.middlewares.request_logging import RequestLoggingMiddleware
 from roomslot.api.routers import api_router
-from roomslot.bootstrap.exception_handler_register import register_exception_handlers
 from roomslot.bootstrap.lifespan import lifespan
+from roomslot.bootstrap.register_exception_handlers import register_exception_handlers
+from roomslot.bootstrap.register_middlewares import register_middlewares
 from roomslot.config.settings import get_settings
 from roomslot.logging.setup import setup_logging
 
@@ -24,11 +24,7 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router)
 
-    app.add_middleware(
-        RequestLoggingMiddleware,
-        excluded_paths=settings.logging.excluded_paths,
-    )
-
+    register_middlewares(app, settings)
     register_exception_handlers(app)
 
     return app
