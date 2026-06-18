@@ -28,7 +28,7 @@ ENV PATH="/app/.venv/bin:$PATH" \
 WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
-
-EXPOSE 8000
+COPY ./backend/alembic.ini /app/alembic.ini
+COPY ./backend/migrations /app/migrations
 
 CMD ["python", "-m", "roomslot"]
