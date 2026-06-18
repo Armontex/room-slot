@@ -7,8 +7,8 @@ from roomslot.common.exceptions import (
     InvalidTokenError,
     MissingClaimError,
 )
-from roomslot.common.providers import SystemClock
 from roomslot.common.types import JsonValue
+from roomslot.domain.ports import Clock
 from roomslot.security.jwt.token_claims import TokenClaims
 
 REQUIRE_CLAIMS = frozenset({"sub", "iat", "exp", "roles"})
@@ -21,7 +21,7 @@ class JWTManager:
         self,
         private_key: str,
         *,
-        clock: SystemClock,
+        clock: Clock,
     ) -> None:
         self._clock = clock
         self._private_key = private_key

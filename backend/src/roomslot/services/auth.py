@@ -5,8 +5,8 @@ from uuid import UUID
 from structlog import get_logger
 
 from roomslot.common.exceptions import InvalidCredentials
-from roomslot.common.providers import SystemClock, Uuid4Generator
 from roomslot.domain.entities.user import User
+from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.domain.value_objects.email import Email
 from roomslot.repositories.auth import AuthRepository
 from roomslot.security.jwt.manager import JWTManager
@@ -20,8 +20,8 @@ class AuthService:
         self,
         repo_factory: Callable[[], AuthRepository],
         password_hasher: PasswordHasher,
-        clock: SystemClock,
-        uuid_generator: Uuid4Generator,
+        clock: Clock,
+        uuid_generator: UuidGenerator,
         jwt_manager: JWTManager,
         jwt_ttl_minutes: int,
     ) -> None:
