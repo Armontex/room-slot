@@ -3,8 +3,10 @@ from functools import lru_cache
 from typing import Annotated
 
 from fastapi import Depends, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
+from roomslot.common.exceptions import TokenError
 from roomslot.common.providers import SystemClock, Uuid4Generator
 from roomslot.config.settings import Settings
 from roomslot.domain.ports import Clock, UuidGenerator
@@ -14,6 +16,8 @@ from roomslot.repositories.room import RoomRepository
 from roomslot.security.jwt.manager import JWTManager
 from roomslot.security.password_hasher import PasswordHasher
 from roomslot.services.auth import AuthService
+
+HTTP_BEARER = HTTPBearer(auto_error=False)
 
 
 def get_engine(request: Request) -> AsyncEngine:
@@ -105,3 +109,17 @@ def get_auth_service(
         jwt_manager=jwt_manager,
         jwt_ttl_minutes=settings.security.jwt_ttl_minutes,
     )
+
+
+def get_access_token(
+    credentials: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(HTTP_BEARER),
+    ],
+) -> str:
+    if credentials is None or not credentials.credentials:
+        raise TokenError()
+    return credentials.credentials
+
+
+TokenDepend = Annotated[str, Depends(get_access_token)]
