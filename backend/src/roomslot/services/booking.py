@@ -70,5 +70,16 @@ class BookingService:
         await repo.update(booking)
         await session.commit()
 
-    async def get_user_bookings(self) -> tuple[Booking, ...]:
-        raise NotImplementedError
+    async def get_user_bookings(
+        self,
+        user_id: UUID,
+        offset: int,
+        limit: int,
+    ) -> tuple[Booking, ...]:
+        if offset < 0:
+            raise ValueError("offset must be greater than or equal 0")
+        if limit <= 0:
+            raise ValueError("limit must be greater than 0")
+
+        repo = self._repo_factory()
+        return await repo.get_user_bookings(user_id, offset=offset, limit=limit)

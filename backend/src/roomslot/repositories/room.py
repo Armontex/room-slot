@@ -12,11 +12,6 @@ class RoomRepository(BaseRepository):
     async def get_rooms(
         self, offset: int, limit: int, only_active: bool = True
     ) -> tuple[Room, ...]:
-        if offset < 0:
-            raise ValueError("offset must be greater than or equal 0")
-        if limit <= 0:
-            raise ValueError("limit must be greater than 0")
-
         query = (
             select(RoomModel)
             .filter_by(is_active=only_active)

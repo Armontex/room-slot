@@ -30,6 +30,21 @@ class BookingRepository(BaseRepository):
 
         return map_booking_model_to_entity(result)
 
+    async def get_user_bookings(
+        self, user_id: UUID, offset: int, limit: int
+    ) -> tuple[Booking, ...]:
+        query = (
+            select(BookingModel)
+            .filter_by(user_id=user_id)
+            .order_by(BookingModel.booking_date.desc(), BookingModel.slot_start.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+
+        result = await self._session.execute(query)
+
+        return tuple(map_booking_model_to_entity(m) for m in result.scalars())
+
     async def update(self, booking: Booking) -> None:
         stmt = (
             update(BookingModel)
@@ -48,9 +63,6 @@ class BookingRepository(BaseRepository):
         date_from: date,
         date_to: date,
     ) -> tuple[Booking, ...]:
-        if date_to < date_from:
-            raise ValueError("date_to must be greater than or equal date_from")
-
         query = (
             select(BookingModel)
             .where(
@@ -65,21 +77,3 @@ class BookingRepository(BaseRepository):
         result = await self._session.execute(query)
 
         return tuple(map_booking_model_to_entity(m) for m in result.scalars())
-
-    # async def get_active_booking_for_slot(
-    #     self,
-    #     room_id: UUID,
-    #     slot: Slot,
-    # ) -> Booking | None:
-    #     query = select(BookingModel).where(
-    #         BookingModel.room_id == room_id,
-    #         BookingModel.booking_date == slot.date,
-    #         BookingModel.slot_start == slot.start_at.time(),
-    #     )
-
-    #     result = await self._session.execute(query)
-
-    #     if (result := result.scalar_one_or_none()) is None:
-    #         return None
-
-    #     return map_booking_model_to_entity(result)
