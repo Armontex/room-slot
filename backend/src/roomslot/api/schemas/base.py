@@ -20,3 +20,15 @@ class ErrorBody(BaseSchema):
 class ErrorResponse(BaseResponse):
     success: bool = Field(default=False, init=False)
     error: ErrorBody
+
+
+class PaginationQuery(BaseSchema):
+    offset: int = Field(ge=0)
+    limit: int = Field(ge=1, default=30)
+
+
+class PaginatedResponse[T](BaseResponse):
+    items: list[T]
+    total: int
+    limit: int
+    offset: int

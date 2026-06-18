@@ -1,26 +1,27 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
 
+from roomslot.api.schemas.base import BaseResponse, BaseSchema
 from roomslot.domain.enums import UserRole
 
 
-class RegisterRequest(BaseModel):
+class RegisterRequest(BaseSchema):
     email: EmailStr
     password: str = Field(min_length=1, max_length=128)
 
 
-class LoginRequest(BaseModel):
+class LoginRequest(BaseSchema):
     email: EmailStr
     password: str
 
 
-class LoginResponse(BaseModel):
+class LoginResponse(BaseResponse):
     access_token: str
 
 
-class MeResponse(BaseModel):
+class MeResponse(BaseResponse):
     id: UUID
     email: str
     role: UserRole

@@ -21,7 +21,7 @@ class RoomService:
         self,
         offset: int,
         limit: int,
-    ) -> tuple[Room, ...]:
+    ) -> tuple[tuple[Room, ...], int]:
         if offset < 0:
             raise ValueError("offset must be greater than or equal 0")
         if limit <= 0:
@@ -31,7 +31,9 @@ class RoomService:
 
         repo = self._repo_factory()
 
-        return await repo.get_rooms(offset=offset, limit=limit)
+        rooms = await repo.get_rooms(offset=offset, limit=limit)
+        total = await repo.get_count_rooms()
+        return rooms, total
 
     async def get_room(self, id: UUID) -> Room:
         logger.debug("room.get_room.started")
