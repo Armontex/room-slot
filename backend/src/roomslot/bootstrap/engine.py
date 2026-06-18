@@ -11,7 +11,7 @@ def create_db_engine(settings: DatabaseSettings) -> AsyncEngine:
         echo=settings.echo,
         pool_pre_ping=True,
         connect_args={
-            "timeout": DB_CONNECT_TIMEOUT_SECONDS,
-            "command_timeout": DB_CONNECT_TIMEOUT_SECONDS,
+            "connect_timeout": DB_CONNECT_TIMEOUT_SECONDS,
+            "read_timeout": DB_CONNECT_TIMEOUT_SECONDS,
         },
     )
