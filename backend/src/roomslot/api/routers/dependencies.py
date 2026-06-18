@@ -4,24 +4,35 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from roomslot.common.exceptions import TokenError
 from roomslot.common.providers import SystemClock, Uuid4Generator
 from roomslot.config.settings import Settings
 from roomslot.domain.ports import Clock, UuidGenerator
+from roomslot.messaging.channels import BOOKING_EVENTS_CHANNEL
+from roomslot.messaging.publisher import RedisPublisher
 from roomslot.repositories.auth import AuthRepository
 from roomslot.repositories.booking import BookingRepository
 from roomslot.repositories.room import RoomRepository
 from roomslot.security.jwt.manager import JWTManager
 from roomslot.security.password_hasher import PasswordHasher
 from roomslot.services.auth import AuthService
+from roomslot.services.booking import BookingService
+from roomslot.services.event_publisher import EventPublisher
+from roomslot.services.room import RoomService
+from roomslot.services.slot import SlotService
 
 HTTP_BEARER = HTTPBearer(auto_error=False)
 
 
 def get_engine(request: Request) -> AsyncEngine:
     return request.app.state.engine
+
+
+def get_redis(request: Request) -> Redis:
+    return request.app.state.redis
 
 
 async def get_session(request: Request) -> AsyncGenerator[AsyncSession]:
@@ -53,6 +64,7 @@ ClockDepend = Annotated[Clock, Depends(get_clock)]
 UuidGenDepend = Annotated[UuidGenerator, Depends(get_uuid_generator)]
 SessionDepend = Annotated[AsyncSession, Depends(get_session)]
 SettingsDepend = Annotated[Settings, Depends(get_settings)]
+RedisDepend = Annotated[Redis, Depends(get_redis)]
 
 
 def get_jwt_manager(
@@ -65,9 +77,21 @@ def get_jwt_manager(
     )
 
 
+Channel = str
+
+
+def get_redis_publisher_factory(
+    redis: RedisDepend,
+) -> Callable[[Channel], RedisPublisher]:
+    return lambda channel: RedisPublisher(redis, channel)
+
+
 AuthRepoFactory = Callable[[], AuthRepository]
 BookingRepoFactory = Callable[[], BookingRepository]
 RoomRepoFactory = Callable[[], RoomRepository]
+RedisPublisherFactoryDepend = Annotated[
+    Callable[[Channel], RedisPublisher], Depends(get_redis_publisher_factory)
+]
 
 
 def get_auth_repo_factory(
@@ -108,6 +132,53 @@ def get_auth_service(
         uuid_generator=uuid_generator,
         jwt_manager=jwt_manager,
         jwt_ttl_minutes=settings.security.jwt_ttl_minutes,
+    )
+
+
+def get_room_service(repo_factory: RoomRepoFactoryDepend) -> RoomService:
+    return RoomService(repo_factory=repo_factory)
+
+
+def get_slot_service(
+    room_repo_factory: RoomRepoFactoryDepend,
+    booking_repo_factory: BookingRepoFactoryDepend,
+    clock: ClockDepend,
+) -> SlotService:
+    return SlotService(
+        room_repo_factory=room_repo_factory,
+        booking_repo_factory=booking_repo_factory,
+        clock=clock,
+    )
+
+
+def get_event_publisher_factory(
+    redis_publisher_factory: RedisPublisherFactoryDepend,
+) -> Callable[[Channel], EventPublisher]:
+    return lambda channel: EventPublisher(redis_publisher_factory(channel))
+
+
+EventPublisherFactoryDepend = Annotated[
+    Callable[[Channel], EventPublisher], Depends(get_event_publisher_factory)
+]
+
+
+def get_booking_event_publisher(
+    event_publisher_factory: EventPublisherFactoryDepend,
+) -> EventPublisher:
+    return event_publisher_factory(BOOKING_EVENTS_CHANNEL)
+
+
+def get_booking_service(
+    repo_factory: BookingRepoFactoryDepend,
+    clock: ClockDepend,
+    uuid_generator: UuidGenDepend,
+    booking_event_publisher: Annotated[EventPublisher, Depends(get_booking_event_publisher)],
+) -> BookingService:
+    return BookingService(
+        repo_factory=repo_factory,
+        clock=clock,
+        uuid_generator=uuid_generator,
+        event_publisher=booking_event_publisher,
     )
 
 

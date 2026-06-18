@@ -36,6 +36,7 @@ async def lifespan(
     app.state.engine = engine
     app.state.session_maker = session_maker
     app.state.room_connection_manager = rcm
+    app.state.redis = redis
 
     logger.info("application.started")
     try:
@@ -46,4 +47,5 @@ async def lifespan(
             await booking_event_listener_task
 
         await engine.dispose()
+        await redis.close()
         logger.info("application.stopped")

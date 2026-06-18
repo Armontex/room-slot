@@ -8,9 +8,9 @@ from roomslot.common.exceptions import (
     BookingAlreadyCancelled,
     BookingNotFoundError,
 )
-from roomslot.common.providers import SystemClock, Uuid4Generator
 from roomslot.domain.entities.booking import Booking
 from roomslot.domain.enums import BookingStatus
+from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.domain.value_objects.slot import Slot
 from roomslot.repositories.booking import BookingRepository
 from roomslot.services.event_publisher import EventPublisher
@@ -22,8 +22,8 @@ class BookingService:
     def __init__(
         self,
         repo_factory: Callable[[], BookingRepository],
-        clock: SystemClock,
-        uuid_generator: Uuid4Generator,
+        clock: Clock,
+        uuid_generator: UuidGenerator,
         event_publisher: EventPublisher,
     ) -> None:
         self._repo_factory = repo_factory

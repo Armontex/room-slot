@@ -5,8 +5,8 @@ from enum import StrEnum
 from uuid import UUID
 
 from roomslot.common.exceptions import RoomNotFoundError
-from roomslot.common.providers import SystemClock
 from roomslot.domain.const import SLOT_MAX_TIME, SLOT_MIN_TIME
+from roomslot.domain.ports import Clock
 from roomslot.domain.value_objects.slot import Slot
 from roomslot.repositories.booking import BookingRepository
 from roomslot.repositories.room import RoomRepository
@@ -43,7 +43,7 @@ class SlotService:
         self,
         room_repo_factory: Callable[[], RoomRepository],
         booking_repo_factory: Callable[[], BookingRepository],
-        clock: SystemClock,
+        clock: Clock,
     ) -> None:
         self._room_repo_factory = room_repo_factory
         self._booking_repo_factory = booking_repo_factory
