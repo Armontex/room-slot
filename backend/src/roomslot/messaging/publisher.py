@@ -1,8 +1,11 @@
 import json
 
 from redis.asyncio import Redis
+from structlog import get_logger
 
 from roomslot.common.types import JsonValue
+
+logger = get_logger(__name__)
 
 
 class RedisPublisher:
@@ -12,3 +15,7 @@ class RedisPublisher:
 
     async def publish(self, payload: dict[str, JsonValue]) -> None:
         await self._redis.publish(self._channel, json.dumps(payload))  # pyright: ignore[reportUnknownMemberType]
+        logger.debug(
+            "redis.publisher.succeeded",
+            payload=payload,
+        )
