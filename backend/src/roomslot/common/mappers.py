@@ -1,3 +1,4 @@
+from roomslot.common.types import JsonValue
 from roomslot.db.models.booking import BookingModel
 from roomslot.db.models.room import RoomModel
 from roomslot.db.models.user import UserModel
@@ -72,3 +73,16 @@ def map_booking_entity_to_model(entity: Booking) -> BookingModel:
         created_at=entity.created_at,
         updated_at=entity.updated_at,
     )
+
+
+def map_booking_to_payload(entity: Booking) -> dict[str, JsonValue]:
+    return {
+        "type": "booking.created",
+        "booking_id": str(entity.id),
+        "room_id": str(entity.room_id),
+        "user_id": str(entity.user_id),
+        "date": entity.slot.date.isoformat(),
+        "slot_start": entity.slot.start_at.time().isoformat(),
+        "slot_end": entity.slot.end_at.time().isoformat(),
+        "status": entity.status,
+    }
