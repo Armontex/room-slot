@@ -1,4 +1,4 @@
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Sequence
 from time import perf_counter
 
 import structlog
@@ -7,10 +7,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
 
-from roomslot.logging.policy import (
-    EXCLUDED_ACCESS_LOG_METHODS,
-    access_log_level_for_status,
-)
+from roomslot.logging.policy import access_log_level_for_status
 
 logger = structlog.get_logger(__name__)
 
@@ -20,10 +17,12 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         self,
         app: ASGIApp,
         *,
-        excluded_paths: list[str],
+        excluded_paths: Sequence[str],
+        excluded_methods: Sequence[str],
     ) -> None:
         super().__init__(app)
         self._excluded_paths = set(excluded_paths)
+        self._excluded_methods = set(excluded_methods)
 
     async def dispatch(
         self,
@@ -34,10 +33,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         duration_ms = round((perf_counter() - started_at) * 1000, 2)
 
-        if (
-            request.url.path in self._excluded_paths
-            or request.method in EXCLUDED_ACCESS_LOG_METHODS
-        ):
+        if (request.url.path in self._excluded_paths) or (request.method in self._excluded_methods):
             return response
 
         level = access_log_level_for_status(response.status_code)

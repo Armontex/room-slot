@@ -10,9 +10,9 @@ from roomslot.config.types import EnvList
 
 DEFAULT_EXCLUDED_ACCESS_LOG_PATHS: frozenset[str] = frozenset(
     {
-        "/health/live",
-        "/health/ready",
-        "/metrics",
+        # "/health/live",
+        # "/health/ready",
+        # "/metrics",
     }
 )
 
