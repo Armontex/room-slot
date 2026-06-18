@@ -1,6 +1,8 @@
 from collections.abc import Callable
 from uuid import UUID
 
+from structlog import get_logger
+
 from roomslot.common.exceptions import (
     BookingAccessDeniedError,
     BookingAlreadyCancelled,
@@ -11,6 +13,9 @@ from roomslot.domain.entities.booking import Booking
 from roomslot.domain.enums import BookingStatus
 from roomslot.domain.value_objects.slot import Slot
 from roomslot.repositories.booking import BookingRepository
+from roomslot.services.event_publisher import EventPublisher
+
+logger = get_logger(__name__)
 
 
 class BookingService:
@@ -19,10 +24,12 @@ class BookingService:
         repo_factory: Callable[[], BookingRepository],
         clock: SystemClock,
         uuid_generator: Uuid4Generator,
+        event_publisher: EventPublisher,
     ) -> None:
         self._repo_factory = repo_factory
         self._clock = clock
         self._uuid_generator = uuid_generator
+        self._publisher = event_publisher
 
     async def create_booking(
         self,
@@ -30,6 +37,7 @@ class BookingService:
         room_id: UUID,
         slot: Slot,
     ) -> Booking:
+        logger.debug("booking.create_booking.started")
         repo = self._repo_factory()
         session = repo.get_session()
 
@@ -44,6 +52,10 @@ class BookingService:
         await repo.add(booking)
         await session.commit()
 
+        await self._publisher.booking_created(booking)
+
+        logger.info("booking.create_booking.succeeded", booking_id=booking.id)
+
         return booking
 
     async def cancel_booking(
@@ -51,6 +63,8 @@ class BookingService:
         user_id: UUID,
         booking_id: UUID,
     ) -> None:
+        logger.debug("booking.cancel_booking.started")
+
         repo = self._repo_factory()
         session = repo.get_session()
 
@@ -70,6 +84,9 @@ class BookingService:
         await repo.update(booking)
         await session.commit()
 
+        await self._publisher.booking_cancelled(booking)
+        logger.info("booking.cancel_booking.succeeded", booking_id=booking.id)
+
     async def get_user_bookings(
         self,
         user_id: UUID,
@@ -80,6 +97,8 @@ class BookingService:
             raise ValueError("offset must be greater than or equal 0")
         if limit <= 0:
             raise ValueError("limit must be greater than 0")
+
+        logger.debug("booking.get_user_bookings.started")
 
         repo = self._repo_factory()
         return await repo.get_user_bookings(user_id, offset=offset, limit=limit)
