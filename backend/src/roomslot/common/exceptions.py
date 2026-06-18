@@ -1,27 +1,51 @@
+from typing import Any
+
 from fastapi import status
 
 
 class BaseError(Exception):
-    message: str
+    message: str = "Error"
 
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    def __init__(self, message: str | None = None) -> None:
+        if message is not None:
+            self.message = message
+        super().__init__(self.message)
 
 
-class DomainError(BaseError): ...
+class DomainError(BaseError):
+    message: str = "Internal server error"
 
 
-class InfraError(BaseError): ...
+class InfraError(BaseError):
+    message: str = "Internal server error"
+
+
+class DatabaseMigrationError(BaseError):
+    message: str = "Database migration error"
 
 
 class AppError(Exception):
     status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
     code: str = "internal_error"
     message: str = "Internal server error"
+    event: str | None = None
+    details: dict[str, Any] | None = None
 
-
-class DatabaseMigrationError(Exception):
-    "Database migration error"
+    def __init__(
+        self,
+        event: str,
+        message: str | None = None,
+        code: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        self.event = event
+        if message is not None:
+            self.message = message
+        if code is not None:
+            self.code = code
+        if details is not None:
+            self.details = details
+        super().__init__(self.message)
 
 
 class AlreadyExistsError(AppError):
@@ -36,18 +60,37 @@ class NotFoundError(AppError):
     message: str = "Resource not found"
 
 
-class EmailAlreadyExistsError(AlreadyExistsError):
-    message: str = "Email already exists"
-
-
-class InvalidCredentials(AppError):
+class UnauthorizedError(AppError):
     status_code: int = status.HTTP_401_UNAUTHORIZED
+    code: str = "unauthorized"
+    message: str = "Unauthorized"
+
+
+class ForbiddenError(AppError):
+    status_code: int = status.HTTP_403_FORBIDDEN
+    code: str = "forbidden"
+    message: str = "Forbidden"
+
+
+class ConflictError(AppError):
+    status_code: int = status.HTTP_409_CONFLICT
+    code: str = "conflict"
+    message: str = "Conflict"
+
+
+# =============================================
+
+
+class InvalidCredentials(UnauthorizedError):
     code: str = "invalid_credentials"
     message: str = "Invalid credentials"
 
 
-class TokenError(AppError):
-    status_code: int = status.HTTP_401_UNAUTHORIZED
+class EmailAlreadyExistsError(AlreadyExistsError):
+    message: str = "Email already exists"
+
+
+class TokenError(UnauthorizedError):
     code: str = "invalid_token"
     message: str = "Invalid token"
 
@@ -62,7 +105,10 @@ class MissingClaimError(TokenError):
     message: str = "Missing required token claim"
 
     def __init__(self, claim: str) -> None:
-        self.message = f"Missing required token claim: {claim}"
+        super().__init__(
+            event="auth.token.missing_claim",
+            message=f"Missing required token claim: {claim}",
+        )
 
 
 class InvalidTokenError(TokenError):
@@ -82,13 +128,11 @@ class BookingNotFoundError(NotFoundError):
     message: str = "Booking not found"
 
 
-class BookingAccessDeniedError(AppError):
-    status_code: int = status.HTTP_403_FORBIDDEN
+class BookingAccessDeniedError(ForbiddenError):
     code: str = "booking_access_denied"
     message: str = "You are not allowed to manage this booking"
 
 
-class BookingAlreadyCancelled(AppError):
-    status_code: int = status.HTTP_409_CONFLICT
+class BookingAlreadyCancelled(ConflictError):
     code: str = "already_cancelled"
     message: str = "Booking already cancelled"

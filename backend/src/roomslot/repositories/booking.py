@@ -20,7 +20,7 @@ class BookingRepository(BaseRepository):
             await self._session.flush()
         except IntegrityError as e:
             await self._session.rollback()
-            raise BookingAlreadyExists() from e
+            raise BookingAlreadyExists("booking.create_booking.already_exists") from e
 
     async def get_by_id(self, booking_id: UUID) -> Booking | None:
         result = await self._session.get(BookingModel, booking_id)

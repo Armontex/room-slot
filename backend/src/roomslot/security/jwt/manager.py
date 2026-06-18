@@ -62,10 +62,10 @@ class JWTManager:
                 },
             )
         except pyjwt.ExpiredSignatureError as e:
-            raise ExpiredTokenError() from e
+            raise ExpiredTokenError("auth.token.expired") from e
         except pyjwt.MissingRequiredClaimError as e:
             raise MissingClaimError(e.claim) from e
         except pyjwt.InvalidTokenError as e:
-            raise InvalidTokenError() from e
+            raise InvalidTokenError("auth.token.invalid") from e
 
         return TokenClaims.from_payload(payload)

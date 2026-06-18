@@ -57,7 +57,7 @@ class SlotService:
         room = await room_repo.get_by_id(room_id)
 
         if room is None or not room.is_active:
-            raise RoomNotFoundError()
+            raise RoomNotFoundError("slot.get_room_slots.room_not_found")
 
         now = self._clock.now()
         today = now.date()

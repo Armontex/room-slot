@@ -58,12 +58,10 @@ class AuthService:
         user = await repo.get_by_email(Email(email))
 
         if user is None:
-            logger.warning("auth.login_user.not_found")
-            raise InvalidCredentials()
+            raise InvalidCredentials("auth.login_user.not_found")
 
         if not await self._ph.verify(user.hashed_password, password):
-            logger.warning("auth.login_user.invalid_password")
-            raise InvalidCredentials()
+            raise InvalidCredentials("auth.login_user.invalid_password")
 
         access_token = self._jwt.issue_token(
             subject=str(user.id),
@@ -81,14 +79,12 @@ class AuthService:
         try:
             user_id = UUID(claims.subject)
         except ValueError as e:
-            logger.warning("auth.authenticate_user.invalid_token")
-            raise InvalidCredentials() from e
+            raise InvalidCredentials("auth.authenticate_user.invalid_token") from e
 
         repo = self._repo_factory()
         user = await repo.get_by_id(user_id)
 
         if user is None:
-            logger.warning("auth.authenticate_user.not_found")
-            raise InvalidCredentials()
+            raise InvalidCredentials("auth.authenticate_user.not_found")
 
         return user

@@ -40,6 +40,6 @@ class RoomService:
         room = await repo.get_by_id(id)
 
         if room is None:
-            raise RoomNotFoundError()
+            raise RoomNotFoundError("room.get_room.not_found")
 
         return room

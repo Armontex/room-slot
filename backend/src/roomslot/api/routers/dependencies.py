@@ -118,7 +118,7 @@ def get_access_token(
     ],
 ) -> str:
     if credentials is None or not credentials.credentials:
-        raise TokenError()
+        raise TokenError("auth.token.missing")
     return credentials.credentials
 
 

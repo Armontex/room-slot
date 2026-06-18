@@ -71,13 +71,13 @@ class BookingService:
         booking = await repo.get_by_id(booking_id)
 
         if not booking:
-            raise BookingNotFoundError()
+            raise BookingNotFoundError("booking.cancel_booking.not_found")
 
         if booking.user_id != user_id:
-            raise BookingAccessDeniedError()
+            raise BookingAccessDeniedError("booking.cancel_booking.access_denied_error")
 
         if booking.status == BookingStatus.CANCELLED:
-            raise BookingAlreadyCancelled()
+            raise BookingAlreadyCancelled("booking.cancel_booking.already_cancelled")
 
         booking = booking.cancel(clock=self._clock)
 
