@@ -7,6 +7,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Index,
     String,
     Time,
     UniqueConstraint,
@@ -69,6 +70,19 @@ class BookingModel(Base):
     )
 
     __table_args__ = (
+        Index(
+            None,
+            room_id,
+            status,
+            booking_date,
+            slot_start,
+        ),
+        Index(
+            None,
+            user_id,
+            booking_date,
+            slot_start,
+        ),
         UniqueConstraint(active_slot_key),
         CheckConstraint(
             ((status == BookingStatus.ACTIVE) & cancelled_at.is_(None))

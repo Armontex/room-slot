@@ -9,7 +9,7 @@ from roomslot.domain.const import USER_HASHED_PASSWORD_MAX_LEN, USER_HASHED_PASS
 from roomslot.domain.enums import UserRole
 
 
-class UserModel(Base):  # TODO: Добавить индексы
+class UserModel(Base):
     __tablename__ = "users"
 
     id: Mapped[ID] = mapped_column()

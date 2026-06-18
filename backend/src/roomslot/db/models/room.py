@@ -16,7 +16,7 @@ from roomslot.domain.const import (
 from roomslot.domain.enums import Building
 
 
-class RoomModel(Base):  # TODO: Добавить индексы
+class RoomModel(Base):
     __tablename__ = "rooms"
 
     id: Mapped[ID] = mapped_column()
@@ -38,6 +38,7 @@ class RoomModel(Base):  # TODO: Добавить индексы
         nullable=False,
         default=True,
         server_default=true(),
+        index=True,
     )
     created_at: Mapped[CreatedAt] = mapped_column(default=SystemClock.now)
     updated_at: Mapped[UpdatedAt] = mapped_column(default=SystemClock.now)
