@@ -13,3 +13,6 @@ revision:
 
 migrate:
 	$(ALEMBIC) upgrade head
+
+seed-rooms:
+	$(BACKEND) uv run python scripts/seed_rooms.py
