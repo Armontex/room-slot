@@ -8,7 +8,8 @@ from roomslot.common.exceptions import (
     MissingClaimError,
 )
 from roomslot.common.providers import SystemClock
-from roomslot.security.jwt.token_claims import JsonValue, TokenClaims
+from roomslot.common.types import JsonValue
+from roomslot.security.jwt.token_claims import TokenClaims
 
 REQUIRE_CLAIMS = frozenset({"sub", "iat", "exp", "roles"})
 ALGORITHM = "HS256"

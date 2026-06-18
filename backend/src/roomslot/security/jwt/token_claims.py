@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import cast
 
-JsonValue = list["JsonValue"] | dict[str, "JsonValue"] | str | bool | int | float | None
+from roomslot.common.types import JsonValue
 
 
 def from_timestamp(value: float) -> datetime:
