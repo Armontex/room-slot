@@ -1,18 +1,21 @@
 from collections.abc import Callable
 from uuid import UUID
 
+from sqlalchemy.ext.asyncio import AsyncSession
 from structlog import get_logger
 
 from roomslot.common.exceptions import (
     BookingAccessDeniedError,
     BookingAlreadyCancelled,
     BookingNotFoundError,
+    RoomNotFoundError,
 )
 from roomslot.domain.entities.booking import Booking
 from roomslot.domain.enums import BookingStatus
 from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.domain.value_objects.slot import Slot
 from roomslot.repositories.booking import BookingRepository
+from roomslot.repositories.room import RoomRepository
 from roomslot.services.event_publisher import EventPublisher
 
 logger = get_logger(__name__)
@@ -21,12 +24,14 @@ logger = get_logger(__name__)
 class BookingService:
     def __init__(
         self,
-        repo_factory: Callable[[], BookingRepository],
+        booking_repo_factory: Callable[[], BookingRepository],
+        room_repo_factory: Callable[[AsyncSession], RoomRepository],
         clock: Clock,
         uuid_generator: UuidGenerator,
         event_publisher: EventPublisher,
     ) -> None:
-        self._repo_factory = repo_factory
+        self._booking_repo_factory = booking_repo_factory
+        self._room_repo_factory = room_repo_factory
         self._clock = clock
         self._uuid_generator = uuid_generator
         self._publisher = event_publisher
@@ -38,8 +43,16 @@ class BookingService:
         slot: Slot,
     ) -> Booking:
         logger.debug("booking.create_booking.started")
-        repo = self._repo_factory()
-        session = repo.get_session()
+        booking_repo = self._booking_repo_factory()
+        session = booking_repo.get_session()
+        room_repo = self._room_repo_factory(session)
+
+        room = await room_repo.get_by_id(room_id)
+        if room is None:
+            raise RoomNotFoundError("booking.create_booking.room_not_found")
+
+        if not room.is_active:
+            raise RoomNotFoundError("booking.create_booking.not_active_room")
 
         booking = Booking.create(
             room_id=room_id,
@@ -49,7 +62,7 @@ class BookingService:
             uuid_generator=self._uuid_generator,
         )
 
-        await repo.add(booking)
+        await booking_repo.add(booking)
         await session.commit()
 
         await self._publisher.booking_created(booking)
@@ -65,7 +78,7 @@ class BookingService:
     ) -> None:
         logger.debug("booking.cancel_booking.started")
 
-        repo = self._repo_factory()
+        repo = self._booking_repo_factory()
         session = repo.get_session()
 
         booking = await repo.get_by_id(booking_id)
@@ -100,5 +113,5 @@ class BookingService:
 
         logger.debug("booking.get_user_bookings.started")
 
-        repo = self._repo_factory()
+        repo = self._booking_repo_factory()
         return await repo.get_user_bookings(user_id, offset=offset, limit=limit)

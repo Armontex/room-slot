@@ -175,7 +175,8 @@ def get_booking_service(
     booking_event_publisher: Annotated[EventPublisher, Depends(get_booking_event_publisher)],
 ) -> BookingService:
     return BookingService(
-        repo_factory=repo_factory,
+        booking_repo_factory=repo_factory,
+        room_repo_factory=RoomRepository,
         clock=clock,
         uuid_generator=uuid_generator,
         event_publisher=booking_event_publisher,

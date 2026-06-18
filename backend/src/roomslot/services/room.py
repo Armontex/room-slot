@@ -44,4 +44,7 @@ class RoomService:
         if room is None:
             raise RoomNotFoundError("room.get_room.not_found")
 
+        if not room.is_active:
+            raise RoomNotFoundError("room.get_room.not_active_room")
+
         return room
