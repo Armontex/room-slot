@@ -105,7 +105,7 @@ class BookingService:
         user_id: UUID,
         offset: int,
         limit: int,
-    ) -> tuple[Booking, ...]:
+    ) -> tuple[tuple[Booking, ...], int]:
         if offset < 0:
             raise ValueError("offset must be greater than or equal 0")
         if limit <= 0:
@@ -114,4 +114,8 @@ class BookingService:
         logger.debug("booking.get_user_bookings.started")
 
         repo = self._booking_repo_factory()
-        return await repo.get_user_bookings(user_id, offset=offset, limit=limit)
+
+        bookings = await repo.get_user_bookings(user_id, offset=offset, limit=limit)
+        total = await repo.get_user_bookings_count(user_id=user_id)
+
+        return bookings, total

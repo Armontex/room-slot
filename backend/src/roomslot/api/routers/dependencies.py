@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from roomslot.common.exceptions import TokenError
 from roomslot.common.providers import SystemClock, Uuid4Generator
 from roomslot.config.settings import Settings
+from roomslot.domain.entities.user import User
 from roomslot.domain.ports import Clock, UuidGenerator
 from roomslot.messaging.channels import BOOKING_EVENTS_CHANNEL
 from roomslot.messaging.publisher import RedisPublisher
@@ -194,4 +195,12 @@ def get_access_token(
     return credentials.credentials
 
 
+async def get_user(
+    token: Annotated[str, Depends(get_access_token)],
+    service: Annotated[AuthService, Depends(get_auth_service)],
+) -> User:
+    return await service.authenticate_user(token)
+
+
 TokenDepend = Annotated[str, Depends(get_access_token)]
+UserDepend = Annotated[User, Depends(get_user)]

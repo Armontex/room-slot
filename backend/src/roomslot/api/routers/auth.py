@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from roomslot.api.routers.dependencies import TokenDepend, get_auth_service
+from roomslot.api.routers.dependencies import UserDepend, get_auth_service
 from roomslot.api.schemas.auth import LoginRequest, LoginResponse, MeResponse, RegisterRequest
 from roomslot.services.auth import AuthService
 
@@ -47,11 +47,8 @@ async def login_user(
     response_model=MeResponse,
 )
 async def me(
-    token: TokenDepend,
-    service: AuthServiceDepend,
+    user: UserDepend,
 ) -> MeResponse:
-    user = await service.authenticate_user(token)
-
     return MeResponse(
         id=user.id,
         email=user.email.value,

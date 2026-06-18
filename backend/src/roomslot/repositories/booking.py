@@ -1,7 +1,7 @@
 from datetime import date
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 
 from roomslot.common.exceptions import BookingAlreadyExists
@@ -31,7 +31,10 @@ class BookingRepository(BaseRepository):
         return map_booking_model_to_entity(result)
 
     async def get_user_bookings(
-        self, user_id: UUID, offset: int, limit: int
+        self,
+        user_id: UUID,
+        offset: int,
+        limit: int,
     ) -> tuple[Booking, ...]:
         query = (
             select(BookingModel)
@@ -44,6 +47,14 @@ class BookingRepository(BaseRepository):
         result = await self._session.execute(query)
 
         return tuple(map_booking_model_to_entity(m) for m in result.scalars())
+
+    async def get_user_bookings_count(self, user_id: UUID) -> int:
+        query = (
+            select(func.count()).select_from(BookingModel).where(BookingModel.user_id == user_id)
+        )
+        result = await self._session.execute(query)
+        total = result.scalar_one()
+        return total
 
     async def update(self, booking: Booking) -> None:
         stmt = (
