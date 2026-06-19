@@ -7,6 +7,10 @@
     <p>{{ $error }}</p>
   @endif
 
+  @if ($errors->has('booking'))
+    <p>{{ $errors->first('booking') }}</p>
+  @endif
+
   @if ($room)
     <h1>{{ $room['name'] }}</h1>
 
@@ -54,8 +58,19 @@
             @foreach ($day['slots'] as $slot)
               <li>
                 <span>{{ substr($slot['time'], 0, 5) }}</span>
+
                 @if ($slot['status'] === 'available')
                   <span>Свободно</span>
+
+                  <form method="POST" action="{{ route('bookings.store') }}">
+                    @csrf
+
+                    <input type="hidden" name="room_id" value="{{ $room['id'] }}">
+                    <input type="hidden" name="date" value="{{ $day['date'] }}">
+                    <input type="hidden" name="start_time" value="{{ $slot['time'] }}">
+
+                    <button type="submit">Забронировать</button>
+                  </form>
                 @elseif ($slot['status'] === 'booked')
                   <span>Занято</span>
                 @elseif ($slot['status'] === 'past')
