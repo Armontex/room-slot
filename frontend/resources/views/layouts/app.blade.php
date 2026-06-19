@@ -12,6 +12,11 @@
     <a href="{{ route('rooms.index') }}">RoomSlot</a>
 
     @if (session('access_token'))
+      <nav>
+        <a href="{{ route('rooms.index') }}">Комнаты</a>
+        <a href="{{ route('me.index') }}">Мои бронирования</a>
+      </nav>
+
       <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">Выйти</button>
