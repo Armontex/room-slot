@@ -2,8 +2,8 @@
 
 namespace App\Support;
 
-use Illuminate\Http\Client\Response;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 final class FastApiClient

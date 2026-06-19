@@ -45,7 +45,7 @@ final class AuthController extends Controller
     {
         $payload = $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $response = $api->post('/auth/register', $payload);
