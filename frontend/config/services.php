@@ -16,6 +16,7 @@ return [
 
     'fastapi' => [
         'url' => env('FASTAPI_URL', 'http://localhost:8000'),
+        'browser_url' => env('FASTAPI_BROWSER_URL', 'http://localhost:8000'),
         'ws_url' => env('FASTAPI_WS_URL', 'ws://localhost:8000'),
     ],
 
