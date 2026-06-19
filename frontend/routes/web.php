@@ -16,4 +16,5 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('fastapi.auth')->group(function () {
     Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
+    Route::get('/rooms/{roomId}', [RoomController::class, 'show'])->name('rooms.show');
 });

@@ -37,7 +37,7 @@
 
                     @endif
 
-                    <a href="/rooms/{{ $room['id'] }}">Открыть</a>
+                    <a href="{{ route('rooms.show', ['roomId' => $room['id']]) }}">Открыть</a>
                 </li>
             @endforeach
         </ul>
