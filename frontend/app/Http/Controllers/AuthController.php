@@ -29,8 +29,18 @@ final class AuthController extends Controller
                 ->onlyInput('email');
         }
 
+        $token = $response->json('access_token');
+
+        if ($token === null) {
+            return back()
+                ->withErrors(['email' => 'Invalid auth response'])
+                ->onlyInput('email');
+        }
+
+        $request->session()->regenerate();
+
         session([
-            'access_token' => $response->json('access_token'),
+            'access_token' => $token,
         ]);
 
         return redirect('/rooms');
@@ -59,9 +69,11 @@ final class AuthController extends Controller
         return redirect('/login');
     }
 
-    public function logout(): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
-        session()->forget('access_token');
+        $request->session()->forget('access_token');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect('/login');
     }
 }
