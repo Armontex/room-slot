@@ -7,6 +7,10 @@
     <p>{{ $error }}</p>
   @endif
 
+  @if ($errors->has('booking'))
+    <p>{{ $errors->first('booking') }}</p>
+  @endif
+
   @if ($user)
     <section>
       <h2>Профиль</h2>
@@ -60,6 +64,13 @@
               <span>Создано</span>
               <span>{{ $booking['created_at'] }}</span>
             </div>
+
+            @if ($booking['status'] === 'active')
+              <form method="POST" action="{{ route('bookings.cancel', ['bookingId' => $booking['id']]) }}">
+                @csrf
+                <button type="submit">Отменить</button>
+              </form>
+            @endif
 
             @if (!empty($booking['cancelled_at']))
               <div>

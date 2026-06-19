@@ -35,4 +35,22 @@ final class BookingController extends Controller
             ->route('rooms.show', ['roomId' => $payload['room_id']]);
     }
 
+    public function cancel(string $bookingId, FastApiClient $api): RedirectResponse
+    {
+        $token = session('access_token');
+
+        try {
+            $response = $api->post("/bookings/{$bookingId}/cancel", token: $token);
+        } catch (ConnectionException) {
+            return back()
+                ->withErrors(['booking' => 'Booking service is unavailable']);
+        }
+
+        if ($response->failed()) {
+            return back()
+                ->withErrors(['booking' => 'Failed to cancel booking']);
+        }
+
+        return back();
+    }
 }
