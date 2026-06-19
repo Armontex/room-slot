@@ -15,7 +15,7 @@ class RedisPublisher:
 
     async def publish(self, payload: dict[str, JsonValue]) -> None:
         await self._redis.publish(self._channel, json.dumps(payload))  # pyright: ignore[reportUnknownMemberType]
-        logger.debug(
+        logger.info(
             "redis.publisher.succeeded",
             payload=payload,
         )

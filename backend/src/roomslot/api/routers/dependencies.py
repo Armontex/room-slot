@@ -6,6 +6,7 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
+from starlette.requests import HTTPConnection
 
 from roomslot.common.exceptions import TokenError
 from roomslot.common.providers import SystemClock, Uuid4Generator
@@ -37,8 +38,8 @@ def get_redis(request: Request) -> Redis:
     return request.app.state.redis
 
 
-def get_room_connection_manager(request: Request) -> RoomConnectionManager:
-    return request.app.state.room_connection_manager
+def get_room_connection_manager(conn: HTTPConnection) -> RoomConnectionManager:
+    return conn.app.state.room_connection_manager
 
 
 async def get_session(request: Request) -> AsyncGenerator[AsyncSession]:

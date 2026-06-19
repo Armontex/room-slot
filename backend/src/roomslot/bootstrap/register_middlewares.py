@@ -1,10 +1,17 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from roomslot.api.middlewares.request_logging import RequestLoggingMiddleware
 from roomslot.config.settings import Settings
 
 
 def register_middlewares(app: FastAPI, settings: Settings) -> None:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:8080"],
+        allow_methods=["GET"],
+        allow_headers=["*"],
+    )
 
     app.add_middleware(
         RequestLoggingMiddleware,

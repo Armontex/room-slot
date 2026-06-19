@@ -23,19 +23,27 @@ class RedisListener:
         pubsub = self._redis.pubsub()  # pyright: ignore[reportUnknownMemberType]
         await pubsub.subscribe(self._channel)
 
-        logger.debug("redis.listener.listen")
+        logger.info("redis.listener.listen", channel=self._channel)
 
         try:
-            async for message in pubsub.listen():  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType]
+            while True:
+                message = await pubsub.get_message(  # pyright: ignore[reportUnknownVariableType]
+                    ignore_subscribe_messages=True,
+                    timeout=1.0,
+                )
+                if message is None:
+                    continue
+
                 message = cast(dict[str, JsonValue], message)
                 if message["type"] != "message":
                     continue
                 event = json.loads(cast(str | bytes | bytearray, message["data"]))
                 if not isinstance(event, dict):
-                    logger.warning("redis.listener.invalid_event", event=event)
+                    logger.warning("redis.listener.invalid_event", event_payload=event)
                     continue
 
                 event = cast(dict[str, JsonValue], event)
+                logger.info("redis.listener.event_received", event_payload=event)
                 await self._send_event_to_subs(event)
 
         finally:
@@ -44,6 +52,7 @@ class RedisListener:
             logger.debug("redis.listener.closed")
 
     async def _send_event_to_subs(self, event: dict[str, JsonValue]) -> None:
+        logger.info("redis.listener.send_event_to_subs", subscribers_count=len(self._subscribers))
         for sub in self._subscribers:
             res = sub(event)
             if inspect.isawaitable(res):

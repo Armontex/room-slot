@@ -16,9 +16,10 @@ class RoomConnectionManager:
     async def connect(self, room_id: UUID, ws: WebSocket) -> None:
         await ws.accept()
         self._connections[room_id].add(ws)
-        logger.debug(
+        logger.info(
             "websocket.room.new_connection",
             room_id=room_id,
+            connections_count=len(self._connections[room_id]),
         )
 
     def disconnect(self, room_id: UUID, ws: WebSocket) -> None:
@@ -32,13 +33,19 @@ class RoomConnectionManager:
         if not connections:
             del self._connections[room_id]
 
-        logger.debug(
+        logger.info(
             "websocket.room.disconnect",
             room_id=room_id,
         )
 
     async def broadcast_to_room(self, room_id: UUID, message: dict[str, JsonValue]) -> None:
         connections = tuple(self._connections.get(room_id, ()))
+        logger.info(
+            "websocket.room.broadcast",
+            room_id=str(room_id),
+            connections_count=len(connections),
+            message=message,
+        )
 
         for ws in connections:
             try:

@@ -15,7 +15,9 @@ async def room_ws(
 
     try:
         while True:
-            await websocket.receive()
+            message = await websocket.receive()
+            if message["type"] == "websocket.disconnect":
+                break
     except WebSocketDisconnect:
         pass
     finally:
