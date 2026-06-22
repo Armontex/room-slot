@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy import Boolean, CheckConstraint, Integer, String, UniqueConstraint, func, true
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
@@ -19,7 +21,7 @@ from roomslot.domain.enums import Building
 class RoomModel(Base):
     __tablename__ = "rooms"
 
-    id: Mapped[ID] = mapped_column()
+    id: Mapped[ID] = mapped_column(default_factory=uuid4, kw_only=True)
     name: Mapped[str] = mapped_column(
         String(ROOM_NAME_MAX_LEN),
         nullable=False,

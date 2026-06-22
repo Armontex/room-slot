@@ -1,5 +1,5 @@
 from datetime import date, datetime, time
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy import (
     CheckConstraint,
@@ -28,7 +28,7 @@ from roomslot.domain.enums import BookingStatus
 class BookingModel(Base):
     __tablename__ = "bookings"
 
-    id: Mapped[ID] = mapped_column()
+    id: Mapped[ID] = mapped_column(default_factory=uuid4, kw_only=True)
     room_id: Mapped[UUID] = mapped_column(
         ForeignKey("rooms.id", ondelete="RESTRICT"),
         nullable=False,

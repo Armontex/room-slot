@@ -3,6 +3,7 @@ from functools import lru_cache
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from roomslot.config.admin import AdminSettings
 from roomslot.config.database import DatabaseSettings
 from roomslot.config.logging import LoggingSettings
 from roomslot.config.redis import RedisSettings
@@ -23,6 +24,7 @@ class Settings(BaseSettings):
     security: SecuritySettings = Field(default_factory=SecuritySettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
     service: ServiceSettings = Field(default_factory=ServiceSettings)
+    admin: AdminSettings = Field(default_factory=AdminSettings)
 
 
 @lru_cache(maxsize=1)

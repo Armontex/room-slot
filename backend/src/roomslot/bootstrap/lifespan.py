@@ -4,8 +4,8 @@ from contextlib import asynccontextmanager, suppress
 
 import structlog
 from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import AsyncEngine
 
-from roomslot.bootstrap.engine import create_db_engine
 from roomslot.bootstrap.redis import create_redis
 from roomslot.bootstrap.session import create_session_factory
 from roomslot.config.settings import Settings
@@ -23,7 +23,7 @@ async def lifespan(
 ) -> AsyncGenerator[None]:
     settings: Settings = app.state.settings
 
-    engine = create_db_engine(settings.db)
+    engine: AsyncEngine = app.state.engine
     session_maker = create_session_factory(engine)
     redis = create_redis(settings.redis)
 
@@ -33,7 +33,6 @@ async def lifespan(
 
     booking_event_listener_task = asyncio.create_task(booking_events_listener.listen())
 
-    app.state.engine = engine
     app.state.session_maker = session_maker
     app.state.room_connection_manager = rcm
     app.state.redis = redis

@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy import CheckConstraint, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
@@ -12,7 +14,7 @@ from roomslot.domain.enums import UserRole
 class UserModel(Base):
     __tablename__ = "users"
 
-    id: Mapped[ID] = mapped_column()
+    id: Mapped[ID] = mapped_column(default_factory=uuid4, kw_only=True)
     email: Mapped[str] = mapped_column(
         String(length=255, collation="utf8mb4_0900_ai_ci"),
         nullable=False,
