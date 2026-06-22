@@ -42,7 +42,6 @@
       id="room-slots-root"
       data-room-id="{{ $room['id'] }}"
       data-ws-url="{{ config('services.fastapi.ws_url') }}"
-      data-api-url="{{ config('services.fastapi.browser_url') }}"
       data-initial-slots='@json($slotsSchedule)'
       data-booking-url="{{ route('bookings.store') }}"
       data-csrf-token="{{ csrf_token() }}"

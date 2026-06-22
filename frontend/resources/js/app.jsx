@@ -4,7 +4,6 @@ import { createRoot } from 'react-dom/client';
 function RoomSlotsRealtime({
   roomId,
   wsUrl,
-  apiUrl,
   initialSlots,
   bookingUrl,
   csrfToken,
@@ -12,35 +11,56 @@ function RoomSlotsRealtime({
   const [slotsSchedule, setSlotsSchedule] = useState(initialSlots);
   const [error, setError] = useState(null);
 
-  async function reloadSlots() {
-    const response = await fetch(`${apiUrl}/rooms/${roomId}/slots`, {
-      headers: {
-        Accept: 'application/json',
-      },
-    });
+  function applyBookingEvent(event) {
+    const nextSlotStatusByEventType = {
+      'booking.created': 'booked',
+      'booking.cancelled': 'available',
+    };
+    const nextSlotStatus = nextSlotStatusByEventType[event.type];
 
-    if (!response.ok) {
-      throw new Error('Failed to load slots');
+    if (!nextSlotStatus) {
+      return;
     }
 
-    setSlotsSchedule(await response.json());
+    setSlotsSchedule((current) => ({
+      ...current,
+      days: current.days.map((day) => {
+        if (day.date !== event.date) {
+          return day;
+        }
+
+        return {
+          ...day,
+          slots: day.slots.map((slot) => {
+            if (slot.time !== event.slot_start || slot.status === 'past') {
+              return slot;
+            }
+
+            return {
+              ...slot,
+              status: nextSlotStatus,
+            };
+          }),
+        };
+      }),
+    }));
   }
 
   useEffect(() => {
     const socket = new WebSocket(`${wsUrl}/ws/rooms/${roomId}`);
 
-    socket.addEventListener('message', async () => {
+    socket.addEventListener('message', (message) => {
       try {
-        await reloadSlots();
+        applyBookingEvent(JSON.parse(message.data));
       } catch {
-        setError('Failed to refresh slots');
+        setError('Failed to apply realtime update');
       }
     });
 
     return () => {
       socket.close();
     };
-  }, [roomId, wsUrl, apiUrl]);
+  }, [roomId, wsUrl]);
 
   if (!slotsSchedule) {
     return null;
@@ -105,7 +125,6 @@ if (root) {
     <RoomSlotsRealtime
       roomId={root.dataset.roomId}
       wsUrl={root.dataset.wsUrl}
-      apiUrl={root.dataset.apiUrl}
       initialSlots={JSON.parse(root.dataset.initialSlots)}
       bookingUrl={root.dataset.bookingUrl}
       csrfToken={root.dataset.csrfToken}
