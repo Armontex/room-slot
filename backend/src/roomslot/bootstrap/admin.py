@@ -80,13 +80,11 @@ class RoomAdmin(ModelView, model=RoomModel):
     column_searchable_list: ClassVar = [RoomModel.name]
     column_sortable_list: ClassVar = [RoomModel.name, RoomModel.floor, RoomModel.capacity]
     form_columns: ClassVar = [
-        RoomModel.id,
         RoomModel.name,
         RoomModel.building,
         RoomModel.floor,
         RoomModel.capacity,
         RoomModel.description,
-        RoomModel.is_active,
     ]
 
 
