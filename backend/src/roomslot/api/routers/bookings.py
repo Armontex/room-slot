@@ -11,6 +11,7 @@ from roomslot.api.schemas.bookings import (
     CreateBookingRequest,
     CreateBookingResponse,
     MeBookingsResponse,
+    RoomItem,
 )
 from roomslot.domain.value_objects.slot import Slot
 from roomslot.services.booking import BookingService
@@ -87,16 +88,20 @@ async def me_bookings(
         limit=query.limit,
         items=[
             BookingsItem(
-                id=b.id,
-                room_id=b.room_id,
-                user_id=b.user_id,
-                slot=BookingSlot(
-                    date=b.slot.date,
-                    start_time=b.slot.start_at.time(),
+                id=b.booking.id,
+                user_id=b.booking.user_id,
+                room=RoomItem(
+                    id=b.room.id,
+                    name=b.room.name,
+                    building=b.room.building,
                 ),
-                created_at=b.created_at,
-                cancelled_at=b.cancelled_at,
-                status=b.status,
+                slot=BookingSlot(
+                    date=b.booking.slot.date,
+                    start_time=b.booking.slot.start_at.time(),
+                ),
+                created_at=b.booking.created_at,
+                cancelled_at=b.booking.cancelled_at,
+                status=b.booking.status,
             )
             for b in bookings
         ],

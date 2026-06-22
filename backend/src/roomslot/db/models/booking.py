@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from datetime import date, datetime, time
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -16,13 +19,16 @@ from sqlalchemy import (
     null,
     text,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from roomslot.common.providers import SystemClock
 from roomslot.db.models.base import Base
 from roomslot.db.models.enums import BookingStatusEnum
 from roomslot.db.models.types import ID, CreatedAt, UpdatedAt
 from roomslot.domain.enums import BookingStatus
+
+if TYPE_CHECKING:
+    from roomslot.db.models.room import RoomModel
 
 
 class BookingModel(Base):
@@ -67,6 +73,11 @@ class BookingModel(Base):
         ),
         init=False,
         nullable=True,
+    )
+
+    room: Mapped[RoomModel] = relationship(
+        uselist=False,
+        init=False,
     )
 
     __table_args__ = (

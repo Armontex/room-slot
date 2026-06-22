@@ -7,7 +7,7 @@ from pydantic import field_validator
 
 from roomslot.api.schemas.base import BaseResponse, BaseSchema, PaginatedResponse
 from roomslot.domain.const import SLOT_MAX_TIME, SLOT_MIN_TIME
-from roomslot.domain.enums import BookingStatus
+from roomslot.domain.enums import BookingStatus, Building
 
 
 class CreateBookingRequest(BaseSchema):
@@ -51,10 +51,16 @@ class BookingSlot(BaseSchema):
     start_time: time
 
 
+class RoomItem(BaseSchema):
+    id: UUID
+    name: str
+    building: Building
+
+
 class BookingsItem(BaseSchema):
     id: UUID
-    room_id: UUID
     user_id: UUID
+    room: RoomItem
     slot: BookingSlot
     status: BookingStatus
     created_at: datetime

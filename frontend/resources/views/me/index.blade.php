@@ -40,9 +40,10 @@
           <li>
             <div>
               <span>Комната</span>
-              <a href="{{ route('rooms.show', ['roomId' => $booking['room_id']]) }}">
-                {{ $booking['room_id'] }}
+              <a href="{{ route('rooms.show', ['roomId' => $booking['room']['id']]) }}">
+                {{ $booking['room']['name'] }}
               </a>
+              <span>{{ $booking['room']['building'] }}</span>
             </div>
 
             <div>

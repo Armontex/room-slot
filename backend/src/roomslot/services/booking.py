@@ -4,6 +4,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from structlog import get_logger
 
+from roomslot.common.dto import UserBookingRead
 from roomslot.common.exceptions import (
     BookingAccessDeniedError,
     BookingAlreadyCancelled,
@@ -105,7 +106,7 @@ class BookingService:
         user_id: UUID,
         offset: int,
         limit: int,
-    ) -> tuple[tuple[Booking, ...], int]:
+    ) -> tuple[tuple[UserBookingRead, ...], int]:
         if offset < 0:
             raise ValueError("offset must be greater than or equal 0")
         if limit <= 0:

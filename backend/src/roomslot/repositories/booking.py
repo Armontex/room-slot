@@ -3,9 +3,15 @@ from uuid import UUID
 
 from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 
+from roomslot.common.dto import UserBookingRead
 from roomslot.common.exceptions import BookingAlreadyExists
-from roomslot.common.mappers import map_booking_entity_to_model, map_booking_model_to_entity
+from roomslot.common.mappers import (
+    map_booking_entity_to_model,
+    map_booking_model_to_entity,
+    map_booking_model_to_user_booking_read,
+)
 from roomslot.db.models.booking import BookingModel
 from roomslot.domain.entities.booking import Booking
 from roomslot.domain.enums import BookingStatus
@@ -35,9 +41,10 @@ class BookingRepository(BaseRepository):
         user_id: UUID,
         offset: int,
         limit: int,
-    ) -> tuple[Booking, ...]:
+    ) -> tuple[UserBookingRead, ...]:
         query = (
             select(BookingModel)
+            .options(joinedload(BookingModel.room))
             .filter_by(user_id=user_id)
             .order_by(BookingModel.booking_date.desc(), BookingModel.slot_start.desc())
             .offset(offset)
@@ -46,7 +53,7 @@ class BookingRepository(BaseRepository):
 
         result = await self._session.execute(query)
 
-        return tuple(map_booking_model_to_entity(m) for m in result.scalars())
+        return tuple(map_booking_model_to_user_booking_read(m) for m in result.scalars())
 
     async def get_user_bookings_count(self, user_id: UUID) -> int:
         query = (

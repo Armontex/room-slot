@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 
+from roomslot.common.dto import UserBookingRead
 from roomslot.common.types import JsonValue
 from roomslot.db.models.booking import BookingModel
 from roomslot.db.models.room import RoomModel
@@ -72,6 +73,13 @@ def map_booking_model_to_entity(model: BookingModel) -> Booking:
         cancelled_at=_optional_as_utc(model.cancelled_at),
         created_at=_as_utc(model.created_at),
         updated_at=_as_utc(model.updated_at),
+    )
+
+
+def map_booking_model_to_user_booking_read(model: BookingModel) -> UserBookingRead:
+    return UserBookingRead(
+        booking=map_booking_model_to_entity(model),
+        room=map_room_model_to_entity(model.room),
     )
 
 
