@@ -1,4 +1,17 @@
 services:
+  nginx:
+    build:
+      context: ./nginx
+    restart: "no"
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      frontend:
+        condition: service_started
+      api:
+        condition: service_started
+
   api:
     build:
       context: .
@@ -33,7 +46,8 @@ services:
       - ./frontend/.env
     environment:
       FASTAPI_URL: http://api:8000
-      FASTAPI_WS_URL: ws://localhost:8000
+      FASTAPI_BROWSER_URL: https://api.roomslot.local
+      FASTAPI_WS_URL: wss://api.roomslot.local
       SESSION_DRIVER: file
       CACHE_STORE: file
       QUEUE_CONNECTION: sync
