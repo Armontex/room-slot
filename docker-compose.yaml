@@ -2,6 +2,7 @@ services:
   nginx:
     build:
       context: ./nginx
+    container_name: roomslot-nginx
     restart: "no"
     ports:
       - "80:80"
@@ -41,6 +42,7 @@ services:
   frontend:
     build:
       context: ./frontend
+    container_name: roomslot-frontend
     restart: "no"
     env_file:
       - ./frontend/.env
@@ -88,6 +90,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    container_name: roomslot-redis
     restart: "no"
     env_file:
       - ./.env
