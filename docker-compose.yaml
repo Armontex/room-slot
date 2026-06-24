@@ -10,7 +10,7 @@ services:
       frontend:
         condition: service_started
       api:
-        condition: service_started
+        condition: service_healthy
 
   api:
     build:
@@ -55,7 +55,8 @@ services:
       - "8080:8000"
     depends_on:
       api:
-        condition: service_started
+        condition: service_healthy
+    stop_grace_period: 3s
 
   db:
     image: mysql:8.4

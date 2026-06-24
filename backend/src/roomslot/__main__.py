@@ -13,6 +13,8 @@ def main() -> None:
         port=INTERNAL_BIND_PORT,
         log_config=None,
         access_log=False,
+        proxy_headers=True,
+        forwarded_allow_ips="*",
     )
 
 
